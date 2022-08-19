@@ -1,0 +1,10 @@
+node_modules
+
+# PM2 start ecosystem.config.js -env production 등으로 실행하며 환경 변수를 내장하고있습니다.
+# 다음의 모듈의 역할을 대신해줍니다.
+# nodmeon 역할 
+# dotenv cross-env 역할
+ecosystem.config.js
+
+# npx sequelize init 으로 만들어지는 환경변수 파일은 ~/config/config.json 인데 이를 제거하였습니다.
+src/sequelize/config/
