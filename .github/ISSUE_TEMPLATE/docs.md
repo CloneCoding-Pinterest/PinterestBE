@@ -3,7 +3,7 @@ name: 문서 작업
 about: 특이한 기술 문법 / 간단한 소개 + URL
 title: 'Docs : 소개글'
 labels: 'bug'
-assignees: ['unchaptered', 'sumin-dev', 'suboem-lee']
+assignees: ['unchaptered', 'sumin-dev', 'subeom-lee']
 ---
 
 ### 한 일
