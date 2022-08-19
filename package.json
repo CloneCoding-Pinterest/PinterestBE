@@ -5,6 +5,7 @@
   "scripts": {
     "start": "pm2 start ecosystem.config.js --env production",
     "dev": "pm2 start ecosystem.config.js --env development",
+    "dev:npx": "npx nodemon ./src/index.js",
     "test": "pm2 start ecosystem.config.js --env test",
     "prepare": "husky install"
   },
