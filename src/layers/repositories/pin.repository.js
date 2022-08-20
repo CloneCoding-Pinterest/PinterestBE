@@ -36,6 +36,28 @@ class PinRepository {
         return result;
     };
 
+    //핀 전체 조회
+    findAllPins = async () => {
+        const pinsResult = await UserPin.findAll({
+            include: [
+                {
+                    model: Pin,
+                    attributes: ['title', 'content', 'picUrl']
+                }
+            ]
+        });
+
+        return pinsResult.map((pin) => {
+            return {
+                pinId: pin.dataValues.pinId,
+                author: pin.dataValues.userId, //User 테이블 구현 후 nickname 등으로 변경필요
+                title: pin.dataValues.Pin.dataValues.title,
+                content: pin.dataValues.Pin.dataValues.content,
+                picUrl: pin.dataValues.Pin.dataValues.picUrl
+            };
+        });
+    };
+
     //핀 상세 조회
     findPin = async (pinId, userId) => {
         //Pin 테이블 조회
@@ -64,6 +86,7 @@ class PinRepository {
 
     //핀 수정
     updatePin = async (pinId, userId, title, content) => {
+        //Pin 테이블 수정
         await Pin.update({ title, content }, { where: { pinId } });
 
         //Pin 테이블 조회
@@ -71,7 +94,35 @@ class PinRepository {
             where: { pinId }
         });
 
-        console.log(pinResult);
+        // //User 테이블에서 userId로 nickname 등 조회
+        // const userResult = await User.findOne({
+        //     where: { userId },
+        //     attributes: ['nickname'],
+        // })
+
+        const result = {
+            pin: {
+                pinId: pinResult.dataValues.pinId,
+                author: userId, //User 테이블 구현 후 nickname 등으로 변경필요
+                title: pinResult.dataValues.title,
+                content: pinResult.dataValues.content,
+                picUrl: pinResult.dataValues.picUrl
+            }
+        };
+
+        return result;
+    };
+
+    //핀 삭제
+    deletePin = async (pinId, userId) => {
+        await UserPin.destroy({
+            where: { pinId, userId }
+        });
+
+        await Pin.destroy({
+            where: { pinId }
+        });
+
         return;
     };
 }

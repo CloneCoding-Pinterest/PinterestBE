@@ -10,6 +10,13 @@ class PinService {
         return result;
     };
 
+    //핀 전체 조회
+    getPinLists = async () => {
+        const result = await this.pinRepository.findAllPins();
+
+        return result;
+    };
+
     //핀 상세 조회
     getPin = async (pinId, userId) => {
         const result = await this.pinRepository.findPin(pinId, userId);
@@ -22,6 +29,13 @@ class PinService {
         const result = await this.pinRepository.updatePin(pinId, userId, title, content);
 
         return result;
+    };
+
+    //핀 삭제
+    deletePin = async (pinId, userId) => {
+        await this.pinRepository.deletePin(pinId, userId);
+
+        return;
     };
 }
 

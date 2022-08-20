@@ -28,6 +28,27 @@ class PinController {
         }
     };
 
+    //핀 전체 조회
+    /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
+    getPinLists = async (req, res, next) => {
+        try {
+            const pinList = await this.pinService.getPinLists();
+
+            res.status(200).json({
+                isSuccess: true,
+                message: 'Pin 조회에 성공했습니다.',
+                result: { pinList }
+            });
+        } catch (err) {
+            // res.status(err.code).json({
+            res.json({
+                isSuccess: false,
+                message: 'Pin 조회에 실패했습니다.' + err.message,
+                result: {}
+            });
+        }
+    };
+
     //핀 상세 조회
     /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
     getPin = async (req, res, next) => {
@@ -72,6 +93,30 @@ class PinController {
             res.json({
                 isSuccess: false,
                 message: 'Pin 수정에 실패했습니다.' + err.message,
+                result: {}
+            });
+        }
+    };
+
+    //핀 삭제
+    /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
+    deletePin = async (req, res, next) => {
+        const { pinId } = req.params;
+        const userId = 1; //토큰 구현 전이라 임의 값으로 설정
+
+        try {
+            await this.pinService.deletePin(pinId, userId);
+
+            res.status(200).json({
+                isSuccess: true,
+                message: 'Pin 삭제에 성공했습니다.',
+                result: {}
+            });
+        } catch (err) {
+            // res.status(err.code).json({
+            res.json({
+                isSuccess: false,
+                message: 'Pin 삭제에 실패했습니다.' + err.message,
                 result: {}
             });
         }
