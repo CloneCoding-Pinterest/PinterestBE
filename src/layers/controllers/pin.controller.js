@@ -7,18 +7,20 @@ class PinController {
     //핀 등록
     /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
     createPin = async (req, res, next) => {
-        const { title, content, tags } = req.body;
+        const { title, content, picKey, picUrl } = req.body;
+        const userId = 1;
 
         try {
-            const result = await this.pinService.createPin(title, content, tags);
+            await this.pinService.createPin(userId, title, content, picKey, picUrl);
 
             res.status(200).json({
                 isSuccess: true,
                 message: '핀 등록에 성공했습니다.',
-                result
+                result: {}
             });
         } catch (err) {
-            res.status(err.code).json({
+            // res.status(err.code).json({
+            res.json({
                 isSuccess: false,
                 message: '핀 등록에 실패했습니다.' + err.message,
                 result: {}
