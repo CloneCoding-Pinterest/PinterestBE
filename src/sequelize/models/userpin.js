@@ -37,8 +37,8 @@ module.exports = (sequelize, DataTypes) => {
             onDelete: 'cascade' // User.userId 가 사라지면 같이 사라짐
         });
         UserPin.belongsTo(models.Pin, {
-            foreignKey: 'pindId', // UserPin.userId
-            targetKey: 'pindId', // User.userId
+            foreignKey: 'pinId', // UserPin.userId
+            targetKey: 'pinId', // User.userId
             onUpdate: 'cascade', // User.userId 가 변경되면 같이 변경됨
             onDelete: 'cascade' // User.userId 가 사라지면 같이 사라짐
         });

@@ -1,0 +1,27 @@
+'use strict';
+module.exports = {
+    async up(queryInterface, Sequelize) {
+        await queryInterface.createTable('PinComments', {
+            pinId: {
+                allowNull: false,
+                primaryKey: true,
+                type: Sequelize.INTEGER,
+                references: {
+                    model: 'Pins', // company migration define
+                    key: 'pinId'
+                }
+            },
+            commentId: {
+                allowNull: false,
+                type: Sequelize.INTEGER,
+                references: {
+                    model: 'Comments', // company migration define
+                    key: 'commentId'
+                }
+            }
+        });
+    },
+    async down(queryInterface, Sequelize) {
+        await queryInterface.dropTable('PinComments');
+    }
+};
