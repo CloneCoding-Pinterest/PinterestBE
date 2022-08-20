@@ -12,21 +12,70 @@ class CommentController {
         const { content } = req.body;
 
         try {
-            const createdComment = await this.commentService.createComment(userId, pinId, content);
+            await this.CommentService.createComment(userId, pinId, content);
+
             res.status(200).json({
                 isSuccess: true,
                 message: '댓글 작성 성공',
-                data: createdComment
+                result: {}
             });
         } catch (err) {
-            next(err);
-            // res.status(400).json({
-            //     isSuccess: false,
-            //     message: '댓글 작성 실패' + err.message,
-            //     createdComment: {}
-            // });
+            next();
+            // 에러코드 수정 필요
         }
     };
+    // 댓글 수정
+    updateComment = async (req, res, next) => {
+        const userId = 1;
+        const { commentId } = req.params;
+        const { content } = req.body;
+
+        try {
+            await this.CommentService.updateComment(userId, commentId, content);
+
+            res.status(200).json({
+                isSuccess: true,
+                message: '댓글 수정 성공',
+                result: {}
+            });
+        } catch (err) {
+            console.error(err);
+            next();
+            // 에러코드 수정 필요
+        }
+    };
+    // 댓글 삭제
+    deleteComment = async (req, res, next) => {
+        const userId = 1;
+        const { commentId } = req.params;
+
+        try {
+            await this.CommentService.deleteComment(userId, commentId);
+
+            res.status(200).json({
+                isSuccess: true,
+                message: '댓글 삭제 성공',
+                result: {}
+            });
+        } catch (err) {
+            console.error(err);
+            next();
+            // 에러코드 수정 필요
+        }
+    };
+    // 해당 유저 찾기
+    // findById = async (req, res, next) => {
+    //     const userId = 2;
+    //     const { commentId } = req.params;
+
+    //     try {
+    //         const findById = await this.commentService.findById(userId, commentId);
+
+    //         return res.json({ findById });
+    //     } catch (err) {
+    //         next(err);
+    //     }
+    // };
 }
 
 module.exports = CommentController;
