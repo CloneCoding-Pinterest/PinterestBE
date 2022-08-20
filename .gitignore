@@ -1,5 +1,7 @@
 node_modules
 
+/.vscode
+
 # PM2 start ecosystem.config.js -env production 등으로 실행하며 환경 변수를 내장하고있습니다.
 # 다음의 모듈의 역할을 대신해줍니다.
 # nodmeon 역할 
