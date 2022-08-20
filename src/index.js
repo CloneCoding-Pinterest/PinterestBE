@@ -1,7 +1,7 @@
 const http = require('http');
 const express = require('express');
 
-const { globalRouter, pinRouter, commentRouter } = require('./layers/_.router.loader');
+const { globalRouter, pinRouter, commentRouter, authRouter } = require('./layers/_.router.loader');
 
 const app = express();
 
@@ -9,6 +9,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/api', globalRouter);
+app.use('/api/auth', authRouter);
 app.use('/api/pin', pinRouter);
 app.use('/api/comment', commentRouter);
 
