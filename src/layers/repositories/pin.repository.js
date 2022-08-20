@@ -1,4 +1,4 @@
-const { Pin } = require(''); //모델 어떻게 찾아와,,,
+const { Pin } = require('../../sequelize/models'); //모델 어떻게 찾아와,,,
 
 class PinRepository {
     //핀 등록
