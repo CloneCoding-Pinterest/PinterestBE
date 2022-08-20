@@ -2,9 +2,13 @@
 module.exports = {
     async up(queryInterface, Sequelize) {
         await queryInterface.createTable('UserPins', {
-            userId: {
+            userPinId: {
                 allowNull: false,
                 primaryKey: true,
+                type: Sequelize.INTEGER
+            },
+            userId: {
+                allowNull: false,
                 type: Sequelize.INTEGER,
                 references: {
                     model: 'Users', // company migration define

@@ -13,9 +13,13 @@ module.exports = (sequelize, DataTypes) => {
     }
     UserPin.init(
         {
-            userId: {
+            userPinId: {
                 allowNull: false,
                 primaryKey: true,
+                type: DataTypes.INTEGER
+            },
+            userId: {
+                allowNull: false,
                 type: DataTypes.INTEGER
             },
             pinId: {
