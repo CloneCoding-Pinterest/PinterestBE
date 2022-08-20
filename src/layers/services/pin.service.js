@@ -4,10 +4,10 @@ class PinService {
     pinRepository = new PinRepository();
 
     //핀 등록
-    createPin = async (title, content, tags) => {
-        await this.pinRepository.createPin(title, content, tags);
+    createPin = async (userId, title, content, picKey, picUrl) => {
+        await this.pinRepository.createPin(userId, title, content, picKey, picUrl);
 
-        return result;
+        return;
     };
 }
 
