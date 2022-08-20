@@ -1,24 +1,25 @@
-const { Pin } = require(''); //모델 어떻게 찾아와,,,
+const { User, Pin, UserPin } = require('../../sequelize/models');
 
 class PinRepository {
     //핀 등록
-    createPin = async (title, content, tags) => {
-        await Pin.create({
+    createPin = async (userId, title, content, picKey, picUrl) => {
+        const pin = await Pin.create({
             title,
             content,
-            tags
+            picKey,
+            picUrl
         });
 
-        return;
-    };
+        console.log(userId);
+        console.log(pin.dataValues.pinId);
 
-    //pinId로 핀 상세조회
-    findPin = async (pinId) => {
-        const result = await Pin.findOne({
-            where: { pinId }
+        const userPin = await UserPin.create({
+            userId,
+            pinId: pin.dataValues.pinId
         });
 
-        return result;
+        console.log(pin, userPin);
+        return { pin, userPin };
     };
 }
 

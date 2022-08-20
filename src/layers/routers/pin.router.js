@@ -6,6 +6,6 @@ const PinController = require('../controllers/pin.controller');
 const pinController = new PinController();
 
 //핀 등록
-Router.post('', pinController.createPin);
+pinRouter.post('', pinController.createPin);
 
 module.exports = pinRouter;
