@@ -3,10 +3,12 @@
  */
 const globalRouter = require('./routers/global.router');
 const pinRouter = require('./routers/pin.router');
+const authRouter = require('./routers/auth.router');
 const commentRouter = require('./routers/comment.router');
 
 module.exports = {
     globalRouter,
     pinRouter,
+    authRouter,
     commentRouter
 };
