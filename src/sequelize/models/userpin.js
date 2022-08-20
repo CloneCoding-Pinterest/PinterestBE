@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
         {
             userPinId: {
                 allowNull: false,
+                autoIncrement: true,
                 primaryKey: true,
                 type: DataTypes.INTEGER
             },

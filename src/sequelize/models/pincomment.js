@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
         {
             pinCommentId: {
                 allowNull: false,
+                autoIncrement: true,
                 primaryKey: true,
                 type: DataTypes.INTEGER
             },
