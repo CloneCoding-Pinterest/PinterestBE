@@ -49,14 +49,15 @@ class AuthService {
             const ageRange = userData.kakao_account.age_range;
 
             const [uploadedSnsToken, uploadedPinToken, uploadedUserDetail] = await Promise.all([
-                async () =>
+                (async () =>
                     await this.#authRepository.uploadSnsToken(
                         providedId,
                         kakaoTokenDto.accessToken,
                         kakaoTokenDto.refreshToken
-                    ),
-                async () => await this.#authRepository.uploadPinToken(refreshToken),
-                async () => await this.#userRepository.uploadUserDetail(nickname, email, ageRange)
+                    ))(),
+                (async () => await this.#authRepository.uploadPinToken(refreshToken))(),
+                (async () =>
+                    await this.#userRepository.uploadUserDetail(nickname, email, ageRange))()
             ]);
 
             // 최종 User 등록 절차 실행
