@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
             providedId: {
                 allowNull: false,
                 unique: true,
-                type: DataTypes.INTEGER
+                type: DataTypes.BIGINT
             },
             category: {
                 allowNull: false,
