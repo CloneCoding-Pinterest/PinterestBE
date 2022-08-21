@@ -1,7 +1,7 @@
 const e = require('express');
 const AuthRepository = require('../repositories/auth.repository');
 const UserRepository = require('../repositories/user.repository');
-const { KakaoProvider } = require('../../modules/_.module.loader');
+const { KakaoProvider, JwtProvider } = require('../../modules/_.module.loader');
 const { NotFoundException } = require('../../models/_.models.loader');
 
 /**
@@ -12,11 +12,13 @@ class AuthService {
     #authRepository;
     #userRepository;
     #kakaoProvider;
+    #jwtProvider;
 
     constructor() {
         this.#authRepository = new AuthRepository();
         this.#userRepository = new UserRepository();
         this.#kakaoProvider = new KakaoProvider();
+        this.#jwtProvider = new JwtProvider();
     }
 
     /**
@@ -32,8 +34,10 @@ class AuthService {
         const providedId = userData.id;
 
         // Pin 사이트 용 토큰 등록 절차 실행
-        const accessToken = 'pin access koken';
-        const refreshToken = 'pin refresh token';
+        const accessToken = this.#jwtProvider.signAccessToken();
+        const refreshToken = this.#jwtProvider.signRefreshToken({
+            nickname: userData.kakao_account.profile.nickname
+        });
 
         const findedSnsTokenId = await this.#authRepository.findTokenIdByProvidedId(providedId);
 
