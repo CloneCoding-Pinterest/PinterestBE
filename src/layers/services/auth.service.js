@@ -46,7 +46,6 @@ class AuthService {
                 kakaoTokenDto.accessToken,
                 kakaoTokenDto.refreshToken
             );
-            if (uploadedSnsToken === null) throw new Error('Token 업로드에 실패했습니다.');
 
             const uploadedPinToken = await this.#authRepository.uploadPinToken(refreshToken);
 

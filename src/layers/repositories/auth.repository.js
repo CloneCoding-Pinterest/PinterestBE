@@ -29,6 +29,8 @@ class AuthRepository {
      * @returns { Promise< { snsTokenId: number }  | null> }
      */
     findTokenIdByProvidedId = async (providedId) => {
+        console.log(`중복 검사 실행 (대상자 : ${providedId})`);
+
         const snsToken = await SnsTokens.findOne({
             where: {
                 providedId
@@ -36,6 +38,8 @@ class AuthRepository {
             limit: 1,
             attributes: ['snsTokenId']
         });
+
+        console.log(snsToken);
 
         if (snsToken === null) return null;
         else {

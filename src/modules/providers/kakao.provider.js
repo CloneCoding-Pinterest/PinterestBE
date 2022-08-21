@@ -1,3 +1,5 @@
+const axios = require('axios');
+
 class KakaoProvider {
     constructor() {}
 
