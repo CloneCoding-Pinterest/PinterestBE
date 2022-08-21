@@ -44,24 +44,20 @@ class AuthService {
         if (findedSnsTokenId === null) {
             console.log('신규 로그인 가입 절차가 진행됩니다.');
 
-            // 신규 로그인 유저 등록 절차 실행
-            const uploadedSnsToken = await this.#authRepository.uploadSnsToken(
-                providedId,
-                kakaoTokenDto.accessToken,
-                kakaoTokenDto.refreshToken
-            );
-
-            const uploadedPinToken = await this.#authRepository.uploadPinToken(refreshToken);
-
-            // Pin 사이트 용 유저 정보 등록 절차 실행
             const email = userData.kakao_account.email;
             const nickname = userData.kakao_account.profile.nickname;
             const ageRange = userData.kakao_account.age_range;
-            const uploadedUserDetail = await this.#userRepository.uploadUserDetail(
-                nickname,
-                email,
-                ageRange
-            );
+
+            const [uploadedSnsToken, uploadedPinToken, uploadedUserDetail] = await Promise.all([
+                async () =>
+                    await this.#authRepository.uploadSnsToken(
+                        providedId,
+                        kakaoTokenDto.accessToken,
+                        kakaoTokenDto.refreshToken
+                    ),
+                async () => await this.#authRepository.uploadPinToken(refreshToken),
+                async () => await this.#userRepository.uploadUserDetail(nickname, email, ageRange)
+            ]);
 
             // 최종 User 등록 절차 실행
             const uploadedUser = await this.#userRepository.uploadUser(
