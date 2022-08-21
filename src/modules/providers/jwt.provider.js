@@ -12,7 +12,7 @@ class JwtProvider {
      * @returns { string }
      */
     signAccessToken() {
-        return jwtLib.sign(JwtProvider.SECRET, {
+        return jwtLib.sign({}, JwtProvider.SECRET, {
             algorithm: JwtProvider.ALGORITHM,
             expiresIn: JwtProvider.ACCESS_EXPIRES_IN
         });
