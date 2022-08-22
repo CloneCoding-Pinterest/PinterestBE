@@ -46,7 +46,7 @@ class AuthController extends BaseController {
         }
     };
 
-    getPin = (req, req, next) => {
+    getPin = (req, res, next) => {
         const { page, count, tag, target } = req.query;
 
         return res.json(req.query);
