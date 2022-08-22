@@ -46,12 +46,6 @@ class AuthController extends BaseController {
         }
     };
 
-    getPin = (req, req, next) => {
-        const { page, count, tag, target } = req.query;
-
-        return res.json(req.query);
-    };
-
     /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
     publichAccessToken = async (req, res, next) => {
         try {
