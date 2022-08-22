@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER
             },
             refreshToken: {
+                allowNull: true,
                 type: DataTypes.STRING
             }
         },
