@@ -30,9 +30,10 @@ class AuthService {
         // true or false
 
         try {
-            const userData = await this.#kakaoProvider.getUserDataByKakaoAccessToken(
-                kakaoTokenDto.accessToken
-            );
+            const userData = await this.#kakaoProvider
+                .getMockUserDataByKakaoAccessToken
+                // kakaoTokenDto.accessToken
+                ();
         } catch (err) {
             throw err;
         }
