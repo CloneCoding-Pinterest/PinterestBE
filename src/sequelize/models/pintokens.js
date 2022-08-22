@@ -29,5 +29,6 @@ module.exports = (sequelize, DataTypes) => {
             modelName: 'PinTokens'
         }
     );
+
     return PinTokens;
 };

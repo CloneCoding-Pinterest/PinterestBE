@@ -1,10 +1,12 @@
 const http = require('http');
+const cors = require('cors');
 const express = require('express');
 
 const { globalRouter, pinRouter, commentRouter, authRouter } = require('./layers/_.router.loader');
 
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
