@@ -21,22 +21,23 @@ class AuthController extends BaseController {
     /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
     registerAccount = async (req, res, next) => {
         try {
+            /** @type { { accessToken: string, refreshToken: string } } */
             const kakaoDto = await joi
                 .object({
-                    token_type: joi.string().required(),
-                    access_token: joi.string().required(),
-                    expires_in: joi.string().required(),
-                    refresh_token: joi.string().required(),
-                    refresh_token_expires_in: joi.string().required()
+                    accessToken: joi.string().required(),
+                    refreshToken: joi.string().required()
                 })
                 .validateAsync({ ...req.body });
+
+            const result = await this.#authService.registerAccount(kakaoDto);
 
             return res.status(200).json({
                 isSuccess: true,
                 message: '카카오 로그인에 성공하셨습니다.',
-                result: { kakaoDto }
+                result
             });
         } catch (err) {
+            console.log(err);
             const exception = this.exceptionHandler(err);
             return res.status(exception.statusCode).json({
                 isSuccess: false,

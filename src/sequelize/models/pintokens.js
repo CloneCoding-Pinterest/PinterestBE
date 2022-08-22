@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER
             },
             refreshToken: {
+                allowNull: true,
                 type: DataTypes.STRING
             }
         },
@@ -29,5 +30,6 @@ module.exports = (sequelize, DataTypes) => {
             modelName: 'PinTokens'
         }
     );
+
     return PinTokens;
 };
