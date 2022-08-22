@@ -62,10 +62,8 @@ class AuthRepository {
         return createdSnsToken;
     };
 
-    uploadPinToken = async (refreshToken) => {
-        const pinToken = await PinTokens.create({
-            refreshToken: refreshToken
-        });
+    uploadPinToken = async () => {
+        const pinToken = await PinTokens.create({});
 
         /**  @type { { pinTokenId: number, refreshToken: string } } */
         const craetedPinToken = pinToken.dataValues;
