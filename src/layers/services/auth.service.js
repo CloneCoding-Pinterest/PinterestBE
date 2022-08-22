@@ -29,14 +29,8 @@ class AuthService {
     registerAccount = async (kakaoTokenDto) => {
         // true or false
 
-        try {
-            const userData = await this.#kakaoProvider
-                .getMockUserDataByKakaoAccessToken
-                // kakaoTokenDto.accessToken
-                ();
-        } catch (err) {
-            throw err;
-        }
+        const userData = await this.#kakaoProvider.getMockUserDataByKakaoAccessToken();
+        // kakaoTokenDto.accessToken
 
         try {
             const providedId = userData.id;
@@ -55,7 +49,7 @@ class AuthService {
                             kakaoTokenDto.accessToken,
                             kakaoTokenDto.refreshToken
                         ))(),
-                    (async () => await this.#authRepository.uploadPinToken(refreshToken))(),
+                    (async () => await this.#authRepository.uploadPinToken())(),
                     (async () =>
                         await this.#userRepository.uploadUserDetail(nickname, email, ageRange))()
                 ]);
@@ -83,12 +77,16 @@ class AuthService {
                 const findedUser = await this.#userRepository.findUserBySnsTokenId(
                     findedSnsTokenId.snsTokenId
                 );
+                if (findedUser === null)
+                    throw new NotFoundException(
+                        '존재하지 않는 유저입니다. 로그아웃 후 로그인을 시도해주세요.'
+                    );
 
                 const accessToken = this.#jwtProvider.signAccessToken({
-                    userId: uploadedUser.userId
+                    userId: findedUser.userId
                 });
                 const refreshToken = this.#jwtProvider.signRefreshToken({
-                    userId: uploadedUser.userId,
+                    userId: findedUser.userId,
                     nickname: userData.kakao_account.profile.nickname
                 });
 

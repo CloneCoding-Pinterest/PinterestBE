@@ -61,6 +61,7 @@ class UserRepository {
             pinTokenId,
             detailId
         });
+        user.dataValues.userId;
 
         /** @type { { userId: number, snsTokenId: number, pinTokenId: number, detailId: number } } */
         const uploadedUser = user.dataValues;

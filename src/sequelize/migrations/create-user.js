@@ -9,6 +9,7 @@ module.exports = {
                 type: Sequelize.INTEGER
             },
             snsTokenId: {
+                allowNull: false,
                 type: Sequelize.INTEGER,
                 references: {
                     model: 'SnsTokens', // company migration define
@@ -16,6 +17,7 @@ module.exports = {
                 }
             },
             pinTokenId: {
+                allowNull: false,
                 type: Sequelize.INTEGER,
                 references: {
                     model: 'PinTokens', // company migration define
@@ -23,6 +25,7 @@ module.exports = {
                 }
             },
             detailId: {
+                allowNull: false,
                 type: Sequelize.INTEGER,
                 references: {
                     model: 'UserDetails', // company migration define
