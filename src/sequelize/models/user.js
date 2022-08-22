@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER
             },
             snsTokenId: {
+                allowNull: false,
                 type: DataTypes.NUMBER,
                 references: {
                     model: 'SnsTokens', // company migration define
@@ -27,6 +28,7 @@ module.exports = (sequelize, DataTypes) => {
                 }
             },
             pinTokenId: {
+                allowNull: false,
                 type: DataTypes.NUMBER,
                 references: {
                     model: 'PinTokens', // company migration define
@@ -34,6 +36,7 @@ module.exports = (sequelize, DataTypes) => {
                 }
             },
             detailId: {
+                allowNull: false,
                 type: DataTypes.NUMBER,
                 references: {
                     model: 'UserDetails', // company migration define
