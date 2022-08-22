@@ -9,17 +9,18 @@ class JwtProvider {
     constructor() {}
 
     /**
+     * @param { { userId: number } } payload
      * @returns { string }
      */
-    signAccessToken() {
-        return jwtLib.sign({}, JwtProvider.SECRET, {
+    signAccessToken(payload) {
+        return jwtLib.sign(payload, JwtProvider.SECRET, {
             algorithm: JwtProvider.ALGORITHM,
             expiresIn: JwtProvider.ACCESS_EXPIRES_IN
         });
     }
 
     /**
-     * @param { object } payload
+     * @param { { userId: number, nickname: string } } payload
      * @returns { string }
      */
     signRefreshToken(payload) {
