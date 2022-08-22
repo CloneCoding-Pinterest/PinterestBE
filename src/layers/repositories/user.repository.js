@@ -8,6 +8,27 @@ class UserRepository {
     constructor() {}
 
     /**
+     * @param { number } userId
+     * @returns { Promise<{ userId: number, snsTokenId: number, pinTokenId: number, detailId: number } | null> }
+     */
+    findUserByUserId = async (userId) => {
+        const user = await User.findOne({
+            where: {
+                userId
+            },
+            attributes: ['userId', 'snsTokenId', 'pinTokenId', 'detailId']
+        });
+
+        if (user === null) return null;
+        else {
+            /** @type { { userId: number, snsTokenId: number, pinTokenId: number, detailId: number } } */
+            const findedUser = user.dataValues;
+
+            return findedUser;
+        }
+    };
+
+    /**
      * @param { number } snsTokenId
      * @returns { Promise<{ userId: number, snsTokenId: number, pinTokenId: number, detailId: number } | null> }
      */

@@ -22,68 +22,104 @@ class AuthService {
     }
 
     /**
+     * @throws { Error }
      * @param { { accessToken: string, refreshToken: string } } kakaoTokenDto
+     * @returns { Promise<{ accessToken: string, refreshToken: string }> }
      */
     registerAccount = async (kakaoTokenDto) => {
         // true or false
 
-        const userData = await this.#kakaoProvider.getUserDataByKakaoAccessToken(
-            kakaoTokenDto.accessToken
-        );
-
-        const providedId = userData.id;
-
-        // Pin 사이트 용 토큰 등록 절차 실행
-        const accessToken = this.#jwtProvider.signAccessToken();
-        const refreshToken = this.#jwtProvider.signRefreshToken({
-            nickname: userData.kakao_account.profile.nickname
-        });
-
-        const findedSnsTokenId = await this.#authRepository.findTokenIdByProvidedId(providedId);
-
-        if (findedSnsTokenId === null) {
-            console.log('신규 로그인 가입 절차가 진행됩니다.');
-
-            const email = userData.kakao_account.email;
-            const nickname = userData.kakao_account.profile.nickname;
-            const ageRange = userData.kakao_account.age_range;
-
-            const [uploadedSnsToken, uploadedPinToken, uploadedUserDetail] = await Promise.all([
-                (async () =>
-                    await this.#authRepository.uploadSnsToken(
-                        providedId,
-                        kakaoTokenDto.accessToken,
-                        kakaoTokenDto.refreshToken
-                    ))(),
-                (async () => await this.#authRepository.uploadPinToken(refreshToken))(),
-                (async () =>
-                    await this.#userRepository.uploadUserDetail(nickname, email, ageRange))()
-            ]);
-
-            // 최종 User 등록 절차 실행
-            const uploadedUser = await this.#userRepository.uploadUser(
-                uploadedSnsToken.snsTokenId,
-                uploadedPinToken.pinTokenId,
-                uploadedUserDetail.detailId
+        try {
+            const userData = await this.#kakaoProvider.getUserDataByKakaoAccessToken(
+                kakaoTokenDto.accessToken
             );
+        } catch (err) {
+            throw err;
+        }
 
-            return { accessToken, refreshToken };
-        } else {
-            console.log('기존 회원의 재 로그인 절차가 실행 되었습니다.');
+        try {
+            const providedId = userData.id;
+            const findedSnsTokenId = await this.#authRepository.findTokenIdByProvidedId(providedId);
+            if (findedSnsTokenId === null) {
+                console.log('신규 로그인 가입 절차가 진행됩니다.');
 
-            const findedUser = await this.#userRepository.findUserBySnsTokenId(
-                findedSnsTokenId.snsTokenId
-            );
-            await this.#authRepository.updatePinToken(findedUser.pinTokenId, refreshToken);
+                const email = userData.kakao_account.email;
+                const nickname = userData.kakao_account.profile.nickname;
+                const ageRange = userData.kakao_account.age_range;
 
-            return { accessToken, refreshToken };
+                const [uploadedSnsToken, uploadedPinToken, uploadedUserDetail] = await Promise.all([
+                    (async () =>
+                        await this.#authRepository.uploadSnsToken(
+                            providedId,
+                            kakaoTokenDto.accessToken,
+                            kakaoTokenDto.refreshToken
+                        ))(),
+                    (async () => await this.#authRepository.uploadPinToken(refreshToken))(),
+                    (async () =>
+                        await this.#userRepository.uploadUserDetail(nickname, email, ageRange))()
+                ]);
+
+                // 최종 User 등록 절차 실행
+                const uploadedUser = await this.#userRepository.uploadUser(
+                    uploadedSnsToken.snsTokenId,
+                    uploadedPinToken.pinTokenId,
+                    uploadedUserDetail.detailId
+                );
+
+                // Pin 사이트 용 토큰 등록 절차 실행
+                const accessToken = this.#jwtProvider.signAccessToken({
+                    userId: uploadedUser.userId
+                });
+                const refreshToken = this.#jwtProvider.signRefreshToken({
+                    userId: uploadedUser.userId,
+                    nickname: userData.kakao_account.profile.nickname
+                });
+
+                return { accessToken, refreshToken };
+            } else {
+                console.log('기존 회원의 재 로그인 절차가 실행 되었습니다.');
+
+                const findedUser = await this.#userRepository.findUserBySnsTokenId(
+                    findedSnsTokenId.snsTokenId
+                );
+
+                const accessToken = this.#jwtProvider.signAccessToken({
+                    userId: uploadedUser.userId
+                });
+                const refreshToken = this.#jwtProvider.signRefreshToken({
+                    userId: uploadedUser.userId,
+                    nickname: userData.kakao_account.profile.nickname
+                });
+
+                await this.#authRepository.updatePinToken(findedUser.pinTokenId, refreshToken);
+
+                return { accessToken, refreshToken };
+            }
+        } catch (err) {
+            throw err;
         }
     };
 
     /**
+     * @throws { Error }
      * @param { string } refreshToken
+     * @returns { Promise<{ accessToken: string, refreshToken: string }> }
      */
-    publichAccessToken = (refreshToken) => {};
+    publichAccessToken = async (refreshToken) => {
+        try {
+            /** @type { userId: number, nickname: string }  */
+            const payload = this.#jwtProvider.verifyToken(refreshToken);
+            const findedUser = await this.#userRepository.findUserByUserId(payload.userId);
+            if (findedUser === null)
+                throw new NotFoundException(`${nickname} 님은 존재하지 않는 유저입니다.`);
+
+            const accessToken = this.#jwtProvider.signAccessToken({ userId: findedUser.userId });
+
+            return { accessToken, refreshToken };
+        } catch (err) {
+            throw err;
+        }
+    };
 }
 
 module.exports = AuthService;
