@@ -67,6 +67,32 @@ class KakaoProvider {
             throw err;
         }
     };
+
+    getMockUserDataByKakaoAccessToken = async () => {
+        return {
+            id: 1203512,
+            connected_at: '2022-08-19T19:08:29Z',
+            properties: {
+                nickname: '익명 사용자'
+            },
+            kakao_account: {
+                profile_nickname_needs_agreement: false,
+                profile: {
+                    nickname: '익명 사용자'
+                },
+                has_email: true,
+                email_needs_agreement: false,
+                is_email_valid: true,
+                is_email_verified: true,
+                email: 'hello@gmail.com',
+                has_age_range: true,
+                age_range_needs_agreement: false,
+                age_range: '20~29',
+                has_gender: false,
+                gender_needs_agreement: false
+            }
+        };
+    };
 }
 
 module.exports = KakaoProvider;
