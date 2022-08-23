@@ -7,16 +7,22 @@ class PinController {
     //핀 등록
     /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
     createPin = async (req, res, next) => {
-        const { title, content } = req.query;
+        const { title, content, picSize } = req.query;
 
         const userId = res.locals.userId;
-        //토큰 구현 전이라 임의 값으로 설정
 
         try {
             const picUrl = req?.file?.location;
             const picKey = req?.file?.key;
 
-            const pin = await this.pinService.createPin(userId, title, content, picKey, picUrl);
+            const pin = await this.pinService.createPin(
+                userId,
+                title,
+                content,
+                picKey,
+                picUrl,
+                picSize
+            );
 
             res.status(200).json({
                 isSuccess: true,
@@ -60,11 +66,9 @@ class PinController {
     /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
     getPin = async (req, res, next) => {
         const { pinId } = req.params;
-        const userId = res.locals.userId;
-        //토큰 구현 전이라 임의 값으로 설정
 
         try {
-            const pin = await this.pinService.getPin(pinId, userId);
+            const pin = await this.pinService.getPin(pinId);
 
             res.status(200).json({
                 isSuccess: true,

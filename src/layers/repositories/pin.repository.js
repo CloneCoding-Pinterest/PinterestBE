@@ -1,14 +1,15 @@
-const { User, Pin, UserPin } = require('../../sequelize/models');
+const { User, UserDetail, Pin, UserPin } = require('../../sequelize/models');
 
 class PinRepository {
     //핀 등록
-    createPin = async (userId, title, content, picKey, picUrl) => {
+    createPin = async (userId, title, content, picKey, picUrl, picSize) => {
         //Pin 테이블 등록
         const pinResult = await Pin.create({
             title,
             content,
             picKey,
-            picUrl
+            picUrl,
+            picSize
         });
 
         //UserPin 테이블 등록
@@ -17,19 +18,29 @@ class PinRepository {
             pinId: pinResult.dataValues.pinId
         });
 
-        // //User 테이블에서 userId로 nickname 등 조회
-        // const userResult = await User.findOne({
-        //     where: { userId },
-        //     attributes: ['nickname'],
-        // })
+        //User 테이블에서 detailId 가져오기
+        const user = await User.findOne({
+            attributes: ['detailId'],
+            where: { userId },
+            raw: true
+        });
+
+        const detailId = user.detailId;
+
+        //UserDetail 테이블에서 nickname 가져오기
+        const username = await UserDetail.findOne({
+            attributes: ['nickname'],
+            where: { detailId }
+        });
 
         const result = {
             pin: {
                 pinId: pinResult.dataValues.pinId,
-                author: userId, //User 테이블 구현 후 nickname 등으로 변경필요
+                author: username.dataValues.nickname,
                 title: pinResult.dataValues.title,
                 content: pinResult.dataValues.content,
-                picUrl: pinResult.dataValues.picUrl
+                picUrl: pinResult.dataValues.picUrl,
+                picSize: pinResult.dataValues.picSize
             }
         };
 
@@ -44,7 +55,17 @@ class PinRepository {
             include: [
                 {
                     model: Pin,
-                    attributes: ['title', 'content', 'picUrl']
+                    attributes: ['title', 'content', 'picUrl', 'picSize']
+                },
+                {
+                    model: User,
+                    attributes: ['userId', 'detailId'],
+                    include: [
+                        {
+                            model: UserDetail,
+                            attributes: ['detailId', 'nickname']
+                        }
+                    ]
                 }
             ]
         });
@@ -52,34 +73,50 @@ class PinRepository {
         return pinsResult.map((pin) => {
             return {
                 pinId: pin.dataValues.pinId,
-                author: pin.dataValues.userId, //User 테이블 구현 후 nickname 등으로 변경필요
+                author: pin.dataValues.User.dataValues.UserDetail.dataValues.nickname,
                 title: pin.dataValues.Pin.dataValues.title,
                 content: pin.dataValues.Pin.dataValues.content,
-                picUrl: pin.dataValues.Pin.dataValues.picUrl
+                picUrl: pin.dataValues.Pin.dataValues.picUrl,
+                picSize: pin.dataValues.Pin.dataValues.picSize
             };
         });
     };
 
     //핀 상세 조회
-    findPin = async (pinId, userId) => {
-        //Pin 테이블 조회
-        const pinResult = await Pin.findOne({
-            where: { pinId }
+    findPin = async (pinId) => {
+        //UserPin 테이블 조회
+        const pinResult = await UserPin.findOne({
+            where: { pinId },
+            raw: true,
+            include: [
+                {
+                    model: Pin,
+                    attributes: ['title', 'content', 'picUrl', 'picSize'],
+                    raw: true
+                },
+                {
+                    model: User,
+                    attributes: ['userId', 'detailId'],
+                    raw: true,
+                    include: [
+                        {
+                            model: UserDetail,
+                            attributes: ['detailId', ['nickname', 'author']],
+                            raw: true
+                        }
+                    ]
+                }
+            ]
         });
-
-        // //User 테이블에서 userId로 nickname 등 조회
-        // const userResult = await User.findOne({
-        //     where: { userId },
-        //     attributes: ['nickname'],
-        // })
 
         const result = {
             pin: {
-                pinId: pinResult.dataValues.pinId,
-                author: userId, //User 테이블 구현 후 nickname 등으로 변경필요
-                title: pinResult.dataValues.title,
-                content: pinResult.dataValues.content,
-                picUrl: pinResult.dataValues.picUrl
+                pinId: pinResult['pinId'],
+                author: pinResult['User.UserDetail.author'],
+                title: pinResult['Pin.title'],
+                content: pinResult['Pin.content'],
+                picUrl: pinResult['Pin.picUrl'],
+                picSize: pinResult['Pin.picSize']
             }
         };
 
@@ -91,24 +128,39 @@ class PinRepository {
         //Pin 테이블 수정
         await Pin.update({ title, content }, { where: { pinId } });
 
-        //Pin 테이블 조회
-        const pinResult = await Pin.findOne({
-            where: { pinId }
+        //UserPin 테이블 조회
+        const pinResult = await UserPin.findOne({
+            where: { pinId },
+            raw: true,
+            include: [
+                {
+                    model: Pin,
+                    attributes: ['title', 'content', 'picUrl', 'picSize'],
+                    raw: true
+                },
+                {
+                    model: User,
+                    attributes: ['userId', 'detailId'],
+                    raw: true,
+                    include: [
+                        {
+                            model: UserDetail,
+                            attributes: ['detailId', ['nickname', 'author']],
+                            raw: true
+                        }
+                    ]
+                }
+            ]
         });
-
-        // //User 테이블에서 userId로 nickname 등 조회
-        // const userResult = await User.findOne({
-        //     where: { userId },
-        //     attributes: ['nickname'],
-        // })
 
         const result = {
             pin: {
-                pinId: pinResult.dataValues.pinId,
-                author: userId, //User 테이블 구현 후 nickname 등으로 변경필요
-                title: pinResult.dataValues.title,
-                content: pinResult.dataValues.content,
-                picUrl: pinResult.dataValues.picUrl
+                pinId: pinResult['pinId'],
+                author: pinResult['User.UserDetail.author'],
+                title: pinResult['Pin.title'],
+                content: pinResult['Pin.content'],
+                picUrl: pinResult['Pin.picUrl'],
+                picSize: pinResult['Pin.picSize']
             }
         };
 
@@ -117,10 +169,6 @@ class PinRepository {
 
     //핀 삭제
     deletePin = async (pinId, userId) => {
-        await UserPin.destroy({
-            where: { pinId, userId }
-        });
-
         await Pin.destroy({
             where: { pinId }
         });
