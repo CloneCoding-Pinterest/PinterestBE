@@ -6,6 +6,7 @@ class FormProvider {
     /**
      * @param { string } message
      * @param { object } result
+     * @returns { SuccessFormDto }
      */
     getSuccessFormDto(message, result = {}) {
         return new SuccessFormDto(message, result);
@@ -14,6 +15,7 @@ class FormProvider {
     /**
      * @param { string } message
      * @param { object } result
+     * @returns { FailureFormDto }
      */
     getFailureFormDto(message, result = {}) {
         return new FailureFormDto(message, result);

@@ -4,5 +4,6 @@ const FormProvider = require('./providers/form.provider');
 
 module.exports = {
     KakaoProvider,
+    FormProvider,
     JwtProvider
 };
