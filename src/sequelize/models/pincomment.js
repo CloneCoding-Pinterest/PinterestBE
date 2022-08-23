@@ -19,6 +19,10 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 type: DataTypes.INTEGER
             },
+            userId: {
+                allowNull: false,
+                type: DataTypes.INTEGER
+            },
             pinId: {
                 allowNull: false,
                 type: DataTypes.INTEGER
