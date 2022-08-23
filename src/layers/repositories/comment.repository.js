@@ -2,26 +2,40 @@ const { Comment, PinComment, UserPin } = require('../../sequelize/models');
 
 class CommentRepository {
     // PinComment 생성
-    createPinComment = async (pinId, commentId) => {
+    createPinComment = async (userId, pinId, commentId) => {
         const createdPinComment = await PinComment.create({
+            userId,
             pinId,
             commentId
         });
         return createdPinComment;
     };
     // 댓글 작성
-    createComment = async (userId, pinId, content) => {
-        const createdComment = await Comment.create({
-            userId,
+    createComment = async (pinId, content, userId) => {
+        const createResult = await Comment.create({
             pinId,
-            content
+            content,
+            userId
         });
-        return createdComment.dataValues;
+        return createResult.dataValues;
     };
     // 댓글 수정
-    updateComment = async (commentId, content) => {
-        const updateComment = await Comment.update({ content }, { where: { commentId } });
-        return updateComment;
+    updateComment = async (commentId, content, userId) => {
+        await Comment.update({ content }, { where: { commentId } });
+        const commentResult = await Comment.findOne({
+            where: { commentId }
+        });
+
+        const updateResult = {
+            Comment: {
+                commentId: commentResult.dataValues.commentId,
+                author: userId,
+                content: commentResult.dataValues.content,
+                createdAt: new Date()
+            }
+        };
+
+        return updateResult;
     };
     // PinCommentId 삭제
     deletePinComment = async (commentId) => {

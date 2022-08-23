@@ -13,12 +13,11 @@ class CommentController extends BaseController {
         const userId = res.locals.userId;
 
         try {
-            const createComment = await this.CommentService.createComment(userId, pinId, content);
-
+            const Comment = await this.CommentService.createComment(pinId, content, userId);
             res.status(200).json({
                 isSuccess: true,
-                message: '댓글 작성 성공',
-                data: { createComment }
+                message: '댓글 작성에 성공했습니다.',
+                result: Comment
             });
         } catch (err) {
             console.log(err);
@@ -38,15 +37,11 @@ class CommentController extends BaseController {
         const userId = res.locals.userId;
 
         try {
-            const updateComment = await this.CommentService.updateComment(
-                commentId,
-                content,
-                userId
-            );
+            const Comment = await this.CommentService.updateComment(commentId, content, userId);
             res.status(200).json({
                 isSuccess: true,
-                message: '댓글 수정 성공',
-                data: { updateComment }
+                message: '댓글 수정에 성공했습니다.',
+                result: Comment
             });
         } catch (err) {
             console.log(err);
@@ -64,11 +59,11 @@ class CommentController extends BaseController {
         const userId = res.locals.userId;
 
         try {
-            const deleteComment = await this.CommentService.deleteComment(commentId, userId);
+            await this.CommentService.deleteComment(commentId, userId);
             res.status(200).json({
                 isSuccess: true,
-                message: '댓글 삭제 성공',
-                data: { deleteComment }
+                message: '댓글 삭제에 성공했습니다.',
+                result: {}
             });
         } catch (err) {
             console.log(err);
