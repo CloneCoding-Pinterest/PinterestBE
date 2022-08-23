@@ -9,7 +9,13 @@ const {
     UnhandleMysqlSequelizeError
 } = require('./exception/custom.exception');
 
+const { FormDto, SuccessFormDto, FailureFormDto } = require('./form/form.dto');
+
 module.exports = {
+    FormDto,
+    SuccessFormDto,
+    FailureFormDto,
+
     CustomException,
     BadRequestException,
     UnauthorizedException,
