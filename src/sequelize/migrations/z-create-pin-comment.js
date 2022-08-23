@@ -8,9 +8,21 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
+            userId: {
+                allowNull: false,
+                type: Sequelize.INTEGER,
+                onUpdate: 'cascade',
+                onDelete: 'cascade',
+                references: {
+                    model: 'Users', // company migration define
+                    key: 'userId'
+                }
+            },
             pinId: {
                 allowNull: false,
                 type: Sequelize.INTEGER,
+                onUpdate: 'cascade',
+                onDelete: 'cascade',
                 references: {
                     model: 'Pins', // company migration define
                     key: 'pinId'
@@ -19,6 +31,8 @@ module.exports = {
             commentId: {
                 allowNull: false,
                 type: Sequelize.INTEGER,
+                onUpdate: 'cascade',
+                onDelete: 'cascade',
                 references: {
                     model: 'Comments', // company migration define
                     key: 'commentId'

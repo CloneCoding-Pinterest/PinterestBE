@@ -1,5 +1,6 @@
 const e = require('express');
 const { JwtProvider } = require('../../modules/_.module.loader');
+const { exceptionHandler } = require('../handler/exception.handler');
 
 /**
  * JWT
@@ -24,15 +25,28 @@ const unloginUserGuard = (req, res, next) => {
     // `Baerer Token` 을 `Token` 으로 변환
     const token = jwtProvider.extract(bearer);
 
-    /**
-     * `Token` 에서 Payload 만 추출
-     * @type { { userId: string, nickname: string } } */
-    const payload = jwtProvider.decodeToken(token);
+    try {
+        /**
+         * `Token` 에서 Payload 만 추출
+         * @type { { userId: string, nickname: string } } */
+        const payload = jwtProvider.decodeToken(token);
 
-    req.body.userId = payload.userId;
-    req.body.nickname = payload.nickname;
+        res.locals.userId = payload.userId;
+        res.locals.nickname = payload.nickname;
 
-    return next();
+        return next();
+    } catch (err) {
+        const exception = exceptionHandler(err);
+
+        const path = `${req.method} ${req.originalUrl}`;
+        const errMessage = JSON.stringify(exception.message);
+
+        return res.status(401).json({
+            isSuccess: false,
+            message: `${path}기능은 토큰이 없는 사용자는 이용할 수 없습니다. ${errMessage}`,
+            result: {}
+        });
+    }
 };
 
 module.exports = unloginUserGuard;

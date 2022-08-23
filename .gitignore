@@ -1,5 +1,5 @@
 node_modules
-
+/key
 /.vscode
 
 # PM2 start ecosystem.config.js -env production 등으로 실행하며 환경 변수를 내장하고있습니다.
