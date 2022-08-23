@@ -29,7 +29,7 @@ class AuthService {
     registerAccount = async (kakaoTokenDto) => {
         // true or false
 
-        const userData = await this.#kakaoProvider.getMockUserDataByKakaoAccessToken();
+        const userData = await this.#kakaoProvider.getUserDataByKakaoAccessToken();
         // kakaoTokenDto.accessToken
 
         try {
