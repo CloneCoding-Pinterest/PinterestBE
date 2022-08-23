@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { s3Middleware } = require('../../middlewares/_.loader');
+const { s3Middleware } = require('../../middlewares/_.middle.loader');
 
 const pinRouter = Router();
 
