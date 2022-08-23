@@ -3,6 +3,10 @@ const CommentRepository = require('../repositories/comment.repository');
 class CommentService {
     CommentRepository = new CommentRepository();
 
+    getComment = async (pinId) => {
+        return await this.CommentRepository.getComment(pinId);
+    };
+
     // 댓글 작성
     createComment = async (userId, pinId, content) => {
         if (!content) {
