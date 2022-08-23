@@ -6,6 +6,9 @@ const commentRouter = Router();
 const CommentController = require('../controllers/comment.controller');
 const commentController = new CommentController();
 
+// 댓글 전체 조회
+commentRouter.get('', commentController.getComment);
+
 // 댓글 작성
 commentRouter.post('', unloginUserGuard, commentController.createComment);
 
