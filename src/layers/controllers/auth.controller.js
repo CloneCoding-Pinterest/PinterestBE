@@ -28,6 +28,7 @@ class AuthController extends BaseController {
                     refreshToken: joi.string().required()
                 })
                 .validateAsync({ ...req.body });
+            console.log(kakaoDto);
 
             const result = await this.#authService.registerAccount(kakaoDto);
 
@@ -37,7 +38,6 @@ class AuthController extends BaseController {
                 result
             });
         } catch (err) {
-            console.log(err);
             const exception = this.exceptionHandler(err);
             return res.status(exception.statusCode).json({
                 isSuccess: false,
@@ -46,7 +46,7 @@ class AuthController extends BaseController {
             });
         }
     };
-    
+
     /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
     publichAccessToken = async (req, res, next) => {
         try {
