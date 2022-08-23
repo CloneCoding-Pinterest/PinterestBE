@@ -2,9 +2,14 @@
 module.exports = {
     async up(queryInterface, Sequelize) {
         await queryInterface.createTable('PinComments', {
+            pinCommentId: {
+                allowNull: false,
+                autoIncrement: true,
+                primaryKey: true,
+                type: Sequelize.INTEGER
+            },
             pinId: {
                 allowNull: false,
-                primaryKey: true,
                 type: Sequelize.INTEGER,
                 references: {
                     model: 'Pins', // company migration define
