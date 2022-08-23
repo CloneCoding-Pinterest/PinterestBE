@@ -4,8 +4,15 @@ class PinService {
     pinRepository = new PinRepository();
 
     //핀 등록
-    createPin = async (userId, title, content, picKey, picUrl) => {
-        const result = await this.pinRepository.createPin(userId, title, content, picKey, picUrl);
+    createPin = async (userId, title, content, picKey, picUrl, picSize) => {
+        const result = await this.pinRepository.createPin(
+            userId,
+            title,
+            content,
+            picKey,
+            picUrl,
+            picSize
+        );
 
         return result;
     };
@@ -18,8 +25,8 @@ class PinService {
     };
 
     //핀 상세 조회
-    getPin = async (pinId, userId) => {
-        const result = await this.pinRepository.findPin(pinId, userId);
+    getPin = async (pinId) => {
+        const result = await this.pinRepository.findPin(pinId);
 
         return result;
     };
