@@ -1,6 +1,10 @@
+const UserRepository = require('../repositories/user.repository');
 const CommentRepository = require('../repositories/comment.repository');
 
+const { NotFoundException } = require('../../models/exception/custom.exception');
+
 class CommentService {
+    UserRepository = new UserRepository();
     CommentRepository = new CommentRepository();
 
     getComment = async (pinId) => {
@@ -9,16 +13,24 @@ class CommentService {
 
     // 댓글 작성
     createComment = async (pinId, content, userId) => {
-        if (!content) {
-            throw new Error('작성할 댓글 내용을 입력해주세요.');
-        }
+        const user = await this.UserRepository.findUserDetailByUserId(userId);
+        if (!user) throw new NotFoundException('존재 하지 않는 유저입니다.');
+
         const createComment = await this.CommentRepository.createComment(pinId, content, userId);
         const createdPinComment = await this.CommentRepository.createPinComment(
             userId,
             pinId,
             createComment.commentId
         );
-        return createdPinComment;
+
+        const comment = {
+            author: user.nickname,
+            commentId: createComment.commentId,
+            content: createComment.content,
+            createdAt: createComment.createdAt
+        };
+
+        return comment;
     };
     // 댓글 수정
     // 유저와 연동해서 수정 가능하게하기 만들어야함
@@ -31,7 +43,7 @@ class CommentService {
         //     throw new Error('자신이 작성한 댓글이 아닙니다.');
         // }
         // console.log(commentUpdate);
-        const Comment = await this.CommentRepository.updateComment(commentId, content, userId);
+        const comment = await this.CommentRepository.updateComment(commentId, content, userId);
         const isExistsCommentByCommentId = await this.CommentRepository.isExistsCommentByCommentId(
             commentId
         );
@@ -39,7 +51,7 @@ class CommentService {
             throw new Error('존재하지 않는 댓글입니다.');
         }
 
-        return Comment;
+        return comment;
     };
     // 댓글 삭제
     // 유저와 연동해서 삭제 가능하게하기 만들어야함

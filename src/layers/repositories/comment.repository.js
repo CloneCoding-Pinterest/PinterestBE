@@ -23,11 +23,13 @@ class CommentRepository {
                 }
             ],
             where: {
-                pinId: 1
+                pinId
             },
             limit: 30,
             raw: true
         });
+
+        console.log(findedCommentList);
 
         const commentList = [];
         for (const comment of findedCommentList) {
@@ -66,16 +68,14 @@ class CommentRepository {
             where: { commentId }
         });
 
-        const updateResult = {
-            Comment: {
-                commentId: commentResult.dataValues.commentId,
-                author: userId,
-                content: commentResult.dataValues.content,
-                createdAt: new Date()
-            }
+        const comment = {
+            commentId: commentResult.dataValues.commentId,
+            author: userId,
+            content: commentResult.dataValues.content,
+            createdAt: new Date()
         };
 
-        return updateResult;
+        return comment;
     };
     // PinCommentId 삭제
     deletePinComment = async (commentId) => {

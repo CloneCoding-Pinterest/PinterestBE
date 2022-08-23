@@ -1,4 +1,5 @@
 const e = require('express');
+const joi = require('joi');
 const CommentService = require('../services/comment.service');
 const BaseController = require('./base.controller');
 
@@ -14,7 +15,7 @@ class CommentController extends BaseController {
 
             return res.status(200).json({
                 isSuccess: true,
-                message: '카카오 로그인에 성공하셨습니다.',
+                message: '댓글 조회에 성공했습니다.',
                 result: { commentList }
             });
         } catch (err) {
@@ -34,12 +35,24 @@ class CommentController extends BaseController {
         const { pinId, content } = req.body;
         const userId = res.locals.userId;
 
+        await joi
+            .object({
+                pinId: joi.number().required(),
+                userId: joi.number().required(),
+                content: joi.string().required()
+            })
+            .validateAsync({
+                pinId,
+                content,
+                userId
+            });
+
         try {
-            const Comment = await this.CommentService.createComment(pinId, content, userId);
+            const comment = await this.CommentService.createComment(pinId, content, userId);
             res.status(200).json({
                 isSuccess: true,
                 message: '댓글 작성에 성공했습니다.',
-                result: Comment
+                result: { comment }
             });
         } catch (err) {
             console.log(err);
@@ -59,11 +72,11 @@ class CommentController extends BaseController {
         const userId = res.locals.userId;
 
         try {
-            const Comment = await this.CommentService.updateComment(commentId, content, userId);
+            const comment = await this.CommentService.updateComment(commentId, content, userId);
             res.status(200).json({
                 isSuccess: true,
                 message: '댓글 수정에 성공했습니다.',
-                result: Comment
+                result: { comment }
             });
         } catch (err) {
             console.log(err);

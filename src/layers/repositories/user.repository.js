@@ -36,6 +36,37 @@ class UserRepository {
     };
 
     /**
+     *
+     * @param {*} userId
+     * @returns { { userId: number, detailId: number, nickname: string } }
+     */
+    findUserDetailByUserId = async (userId) => {
+        const user = await User.findOne({
+            where: {
+                userId
+            },
+            attributes: ['userId', 'detailId'],
+            raw: true,
+            include: [
+                {
+                    model: UserDetail,
+                    attributes: ['detailId', 'nickname'],
+                    raw: true
+                }
+            ]
+        });
+
+        if (user === null) return null;
+        else {
+            return {
+                userId: user['userId'],
+                detailId: user['detailId'],
+                nickname: user['UserDetail.nickname']
+            };
+        }
+    };
+
+    /**
      * @param { number } snsTokenId
      * @returns { Promise<{ userId: number, snsTokenId: number, pinTokenId: number, detailId: number } | null> }
      */
