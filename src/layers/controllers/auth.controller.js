@@ -46,7 +46,7 @@ class AuthController extends BaseController {
             });
         }
     };
-
+    
     /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
     publichAccessToken = async (req, res, next) => {
         try {
