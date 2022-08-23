@@ -31,8 +31,8 @@ const unloginUserGuard = (req, res, next) => {
          * @type { { userId: string, nickname: string } } */
         const payload = jwtProvider.decodeToken(token);
 
-        req.body.userId = payload.userId;
-        req.body.nickname = payload.nickname;
+        res.locals.userId = payload.userId;
+        res.locals.nickname = payload.nickname;
 
         return next();
     } catch (err) {
