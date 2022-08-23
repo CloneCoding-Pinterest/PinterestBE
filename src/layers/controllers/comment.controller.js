@@ -1,7 +1,9 @@
 const e = require('express');
 const CommentService = require('../services/comment.service');
+const BaseController = require('./base.controller');
+// const joi = require('joi');
 
-class CommentController {
+class CommentController extends BaseController {
     CommentService = new CommentService();
 
     // 댓글 작성
@@ -20,16 +22,21 @@ class CommentController {
                 data: { createComment }
             });
         } catch (err) {
-            // console.error(err);
-            next();
-            // 에러코드 수정 필요
+            console.log(err);
+            const exception = this.exceptionHandler(err);
+            return res.status(exception.statusCode).json({
+                isSuccess: false,
+                message: exception.message,
+                result: {}
+            });
         }
     };
+
     // 댓글 수정
     updateComment = async (req, res, next) => {
         const { commentId } = req.params;
         const { content } = req.body;
-        const userId = 1;
+        const userId = 2;
 
         try {
             const updateComment = await this.CommentService.updateComment(
@@ -37,34 +44,41 @@ class CommentController {
                 content,
                 userId
             );
-
             res.status(200).json({
                 isSuccess: true,
                 message: '댓글 수정 성공',
                 data: { updateComment }
             });
         } catch (err) {
-            // console.error(err);
-            next();
-            // 에러코드 수정 필요
+            console.log(err);
+            const exception = this.exceptionHandler(err);
+            return res.status(exception.statusCode).json({
+                isSuccess: false,
+                message: exception.message,
+                result: {}
+            });
         }
     };
     // 댓글 삭제
     deleteComment = async (req, res, next) => {
         const { commentId } = req.params;
+        const userId = 2;
 
         try {
-            const deleteComment = await this.CommentService.deleteComment(commentId);
-
+            const deleteComment = await this.CommentService.deleteComment(commentId, userId);
             res.status(200).json({
                 isSuccess: true,
                 message: '댓글 삭제 성공',
                 data: { deleteComment }
             });
         } catch (err) {
-            // console.error(err);
-            next();
-            // 에러코드 수정 필요
+            console.log(err);
+            const exception = this.exceptionHandler(err);
+            return res.status(exception.statusCode).json({
+                isSuccess: false,
+                message: exception.message,
+                result: {}
+            });
         }
     };
 }

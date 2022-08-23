@@ -39,7 +39,10 @@ class CommentRepository {
         return findCommentId;
     };
     // 댓글 작성자 찾기
-    findByUserId = async (user) => {};
+    findByUserId = async (userId) => {
+        const findByUserId = await UserPin.findOne({ where: { userId } });
+        return findByUserId.dataValues;
+    };
 }
 
 module.exports = CommentRepository;
