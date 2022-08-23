@@ -7,6 +7,13 @@ const { User, UserDetail } = require('../../sequelize/models');
 class UserRepository {
     constructor() {}
 
+    isExistsUserByUserId = async (userId) => {
+        const user = await User.findByPk(userId);
+
+        if (user === null) return false;
+        else return true;
+    };
+
     /**
      * @param { number } userId
      * @returns { Promise<{ userId: number, snsTokenId: number, pinTokenId: number, detailId: number } | null> }
