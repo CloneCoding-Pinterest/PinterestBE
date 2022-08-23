@@ -20,7 +20,11 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.STRING
             },
-            picUrl: {
+            piCSize: {
+                allowNull: false,
+                type: Sequelize.STRING
+            },
+            picSize: {
                 allowNull: false,
                 type: Sequelize.STRING
             }
