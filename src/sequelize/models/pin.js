@@ -37,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
             },
             picSize: {
                 allowNull: false,
-                type: Sequelize.STRING
+                type: DataTypes.STRING
             }
         },
         {
