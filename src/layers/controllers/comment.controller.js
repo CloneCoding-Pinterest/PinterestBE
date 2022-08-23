@@ -77,18 +77,17 @@ class CommentController extends BaseController {
 
         try {
             const comment = await this.#commentService.updateComment(commentId, content, userId);
-            res.status(200).json({
-                isSuccess: true,
-                message: '댓글 수정에 성공했습니다.',
-                result: { comment }
-            });
+
+            return res
+                .status(200)
+                .json(
+                    this.#formProvider.getSuccessFormDto('댓글 수정에 성공했습니다.', { comment })
+                );
         } catch (err) {
             const exception = this.exceptionHandler(err);
-            return res.status(exception.statusCode).json({
-                isSuccess: false,
-                message: exception.message,
-                result: {}
-            });
+            return res
+                .status(exception.statusCode)
+                .json(this.#formProvider.getFailureFormDto(exception.message));
         }
     };
     // 댓글 삭제
@@ -98,18 +97,14 @@ class CommentController extends BaseController {
 
         try {
             await this.#commentService.deleteComment(commentId, userId);
-            res.status(200).json({
-                isSuccess: true,
-                message: '댓글 삭제에 성공했습니다.',
-                result: {}
-            });
+            return res
+                .status(200)
+                .json(this.#formProvider.getSuccessFormDto('댓글 삭제에 성공했습니다.', {}));
         } catch (err) {
             const exception = this.exceptionHandler(err);
-            return res.status(exception.statusCode).json({
-                isSuccess: false,
-                message: exception.message,
-                result: {}
-            });
+            return res
+                .status(exception.statusCode)
+                .json(this.#formProvider.getFailureFormDto(exception.message));
         }
     };
 }
