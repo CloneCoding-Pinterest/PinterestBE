@@ -8,7 +8,9 @@ class PinController {
     /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
     createPin = async (req, res, next) => {
         const { title, content } = req.query;
-        const userId = 1; //토큰 구현 전이라 임의 값으로 설정
+
+        const userId = res.locals.userId;
+        //토큰 구현 전이라 임의 값으로 설정
 
         try {
             const picUrl = req?.file?.location;
@@ -58,7 +60,8 @@ class PinController {
     /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
     getPin = async (req, res, next) => {
         const { pinId } = req.params;
-        const userId = 1; //토큰 구현 전이라 임의 값으로 설정
+        const userId = res.locals.userId;
+        //토큰 구현 전이라 임의 값으로 설정
 
         try {
             const pin = await this.pinService.getPin(pinId, userId);
@@ -82,8 +85,9 @@ class PinController {
     /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
     updatePin = async (req, res, next) => {
         const { pinId } = req.params;
-        const userId = 1; //토큰 구현 전이라 임의 값으로 설정
+        const userId = res.locals.userId;
         const { title, content } = req.body;
+        //토큰 구현 전이라 임의 값으로 설정
 
         try {
             const pin = await this.pinService.updatePin(pinId, userId, title, content);
@@ -107,7 +111,8 @@ class PinController {
     /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
     deletePin = async (req, res, next) => {
         const { pinId } = req.params;
-        const userId = 1; //토큰 구현 전이라 임의 값으로 설정
+        const userId = res.locals.userId;
+        //토큰 구현 전이라 임의 값으로 설정
 
         try {
             await this.pinService.deletePin(pinId, userId);
