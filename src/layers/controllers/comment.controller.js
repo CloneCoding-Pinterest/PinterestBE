@@ -6,12 +6,13 @@ const CommentService = require('../services/comment.service');
 const BaseController = require('./base.controller');
 
 class CommentController extends BaseController {
-    CommentService = new CommentService();
+    #commentService;
+    #formProvider;
 
-    formProvider;
     constructor() {
         super();
-        this.formProvider = new FormProvider();
+        this.#commentService = new CommentService();
+        this.#formProvider = new FormProvider();
     }
 
     /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
@@ -19,10 +20,10 @@ class CommentController extends BaseController {
         const { pinId } = req.query;
 
         try {
-            const commentList = await this.CommentService.getComment(pinId);
+            const commentList = await this.#commentService.getComment(pinId);
 
             return res.status(200).json(
-                this.formProvider.getSuccessFormDto('댓글 조회에 성공했습니다.', {
+                this.#formProvider.getSuccessFormDto('댓글 조회에 성공했습니다.', {
                     commentList
                 })
             );
@@ -31,7 +32,7 @@ class CommentController extends BaseController {
 
             return res
                 .status(exception.statusCode)
-                .json(this.formProvider.getFailureFormDto(exception.message));
+                .json(this.#formProvider.getFailureFormDto(exception.message));
         }
     };
 
@@ -54,17 +55,17 @@ class CommentController extends BaseController {
                     userId
                 });
 
-            const comment = await this.CommentService.createComment(pinId, content, userId);
+            const comment = await this.#commentService.createComment(pinId, content, userId);
             return res
                 .status(200)
                 .json(
-                    this.formProvider.getSuccessFormDto('댓글 작성에 성공했습니다.', { comment })
+                    this.#formProvider.getSuccessFormDto('댓글 작성에 성공했습니다.', { comment })
                 );
         } catch (err) {
             const exception = this.exceptionHandler(err);
             return res
                 .status(exception.statusCode)
-                .json(this.formProvider.getFailureFormDto(exception.message));
+                .json(this.#formProvider.getFailureFormDto(exception.message));
         }
     };
 
@@ -75,7 +76,7 @@ class CommentController extends BaseController {
         const userId = res.locals.userId;
 
         try {
-            const comment = await this.CommentService.updateComment(commentId, content, userId);
+            const comment = await this.#commentService.updateComment(commentId, content, userId);
             res.status(200).json({
                 isSuccess: true,
                 message: '댓글 수정에 성공했습니다.',
@@ -96,7 +97,7 @@ class CommentController extends BaseController {
         const userId = res.locals.userId;
 
         try {
-            await this.CommentService.deleteComment(commentId, userId);
+            await this.#commentService.deleteComment(commentId, userId);
             res.status(200).json({
                 isSuccess: true,
                 message: '댓글 삭제에 성공했습니다.',

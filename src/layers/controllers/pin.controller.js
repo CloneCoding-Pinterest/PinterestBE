@@ -4,12 +4,13 @@ const { FormProvider } = require('../../modules/_.module.loader');
 const BaseController = require('./base.controller');
 
 class PinController extends BaseController {
-    pinService = new PinService();
+    #pinService;
+    #formProvider;
 
-    formProvider;
     constructor() {
         super();
-        this.formProvider = new FormProvider();
+        this.#pinService = new PinService();
+        this.#formProvider = new FormProvider();
     }
 
     //핀 등록
@@ -22,7 +23,7 @@ class PinController extends BaseController {
             const picUrl = req?.file?.location;
             const picKey = req?.file?.key;
 
-            const pin = await this.pinService.createPin(
+            const pin = await this.#pinService.createPin(
                 userId,
                 title,
                 content,
@@ -33,12 +34,12 @@ class PinController extends BaseController {
 
             return res
                 .status(200)
-                .json(this.formProvider.getSuccessFormDto('Pin 등록에 성공했습니다.', pin));
+                .json(this.#formProvider.getSuccessFormDto('Pin 등록에 성공했습니다.', pin));
         } catch (err) {
             const exception = this.exceptionHandler(err);
             return res
                 .status(exception.statusCode)
-                .json(this.formProvider.getFailureFormDto(exception.message));
+                .json(this.#formProvider.getFailureFormDto(exception.message));
         }
     };
 
@@ -48,16 +49,18 @@ class PinController extends BaseController {
         try {
             const page = Number(req.query.page || 1); //값이 없다면 기본값 1페이지
             const count = Number(req.query.count || 18); //값이 없다면 기본값 핀 18개
-            const pinList = await this.pinService.getPinLists(page, count);
+            const pinList = await this.#pinService.getPinLists(page, count);
 
             return res
                 .status(200)
-                .json(this.formProvider.getSuccessFormDto('Pin 조회에 성공했습니다.', { pinList }));
+                .json(
+                    this.#formProvider.getSuccessFormDto('Pin 조회에 성공했습니다.', { pinList })
+                );
         } catch (err) {
             const exception = this.exceptionHandler(err);
             return res
                 .status(exception.statusCode)
-                .json(this.formProvider.getFailureFormDto(exception.message));
+                .json(this.#formProvider.getFailureFormDto(exception.message));
         }
     };
 
@@ -67,16 +70,16 @@ class PinController extends BaseController {
         const { pinId } = req.params;
 
         try {
-            const pin = await this.pinService.getPin(pinId);
+            const pin = await this.#pinService.getPin(pinId);
 
             return res
                 .status(200)
-                .json(this.formProvider.getSuccessFormDto('Pin 조회에 성공했습니다.', pin));
+                .json(this.#formProvider.getSuccessFormDto('Pin 조회에 성공했습니다.', pin));
         } catch (err) {
             const exception = this.exceptionHandler(err);
             return res
                 .status(exception.statusCode)
-                .json(this.formProvider.getFailureFormDto(exception.message));
+                .json(this.#formProvider.getFailureFormDto(exception.message));
         }
     };
 
@@ -89,16 +92,16 @@ class PinController extends BaseController {
         //토큰 구현 전이라 임의 값으로 설정
 
         try {
-            const pin = await this.pinService.updatePin(pinId, userId, title, content);
+            const pin = await this.#pinService.updatePin(pinId, userId, title, content);
 
             return res
                 .status(200)
-                .json(this.formProvider.getSuccessFormDto('Pin 수정에 성공했습니다.', pin));
+                .json(this.#formProvider.getSuccessFormDto('Pin 수정에 성공했습니다.', pin));
         } catch (err) {
             const exception = this.exceptionHandler(err);
             return res
                 .status(exception.statusCode)
-                .json(this.formProvider.getFailureFormDto(exception.message));
+                .json(this.#formProvider.getFailureFormDto(exception.message));
         }
     };
 
@@ -110,16 +113,16 @@ class PinController extends BaseController {
         //토큰 구현 전이라 임의 값으로 설정
 
         try {
-            await this.pinService.deletePin(pinId, userId);
+            await this.#pinService.deletePin(pinId, userId);
 
             return res
                 .status(200)
-                .json(this.formProvider.getSuccessFormDto('Pin 삭제에 성공했습니다.'));
+                .json(this.#formProvider.getSuccessFormDto('Pin 삭제에 성공했습니다.'));
         } catch (err) {
             const exception = this.exceptionHandler(err);
             return res
                 .status(exception.statusCode)
-                .json(this.formProvider.getFailureFormDto(exception.message));
+                .json(this.#formProvider.getFailureFormDto(exception.message));
         }
     };
 }
