@@ -37,8 +37,10 @@ class PinRepository {
     };
 
     //핀 전체 조회
-    findAllPins = async () => {
+    findAllPins = async (page, count) => {
         const pinsResult = await UserPin.findAll({
+            offset: count * (page - 1),
+            limit: count,
             include: [
                 {
                     model: Pin,

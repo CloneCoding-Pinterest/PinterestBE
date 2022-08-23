@@ -11,8 +11,8 @@ class PinService {
     };
 
     //핀 전체 조회
-    getPinLists = async () => {
-        const result = await this.pinRepository.findAllPins();
+    getPinLists = async (page, count) => {
+        const result = await this.pinRepository.findAllPins(page, count);
 
         return result;
     };
