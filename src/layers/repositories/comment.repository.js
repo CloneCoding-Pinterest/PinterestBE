@@ -1,6 +1,46 @@
-const { Comment, PinComment, UserPin } = require('../../sequelize/models');
+const { User, UserDetail, Comment, PinComment, UserPin } = require('../../sequelize/models');
 
 class CommentRepository {
+    getComment = async (pinId) => {
+        const findedCommentList = await PinComment.findAll({
+            include: [
+                {
+                    model: User,
+                    attributes: ['userId', 'detailId'],
+                    raw: true,
+                    include: [
+                        {
+                            model: UserDetail,
+                            attributes: ['detailId', ['nickname', 'author']],
+                            raw: true
+                        }
+                    ]
+                },
+                {
+                    model: Comment,
+                    attributes: ['content', 'createdAt'],
+                    raw: true
+                }
+            ],
+            where: {
+                pinId: 1
+            },
+            limit: 30,
+            raw: true
+        });
+
+        const commentList = [];
+        for (const comment of findedCommentList) {
+            commentList.push({
+                commentId: comment['commentId'],
+                content: comment['Comment.content'],
+                createdAt: comment['Comment.createdAt'],
+                author: comment['User.UserDetail.author']
+            });
+        }
+
+        return commentList;
+    };
     // PinComment 생성
     createPinComment = async (userId, pinId, commentId) => {
         const createdPinComment = await PinComment.create({

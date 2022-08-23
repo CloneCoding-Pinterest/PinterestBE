@@ -1,10 +1,32 @@
 const e = require('express');
 const CommentService = require('../services/comment.service');
 const BaseController = require('./base.controller');
-// const joi = require('joi');
 
 class CommentController extends BaseController {
     CommentService = new CommentService();
+
+    /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
+    getComment = async (req, res, next) => {
+        const { pinId } = req.query;
+
+        try {
+            const commentList = await this.CommentService.getComment(pinId);
+
+            return res.status(200).json({
+                isSuccess: true,
+                message: '카카오 로그인에 성공하셨습니다.',
+                result: { commentList }
+            });
+        } catch (err) {
+            console.log(err);
+            const exception = this.exceptionHandler(err);
+            return res.status(exception.statusCode).json({
+                isSuccess: false,
+                message: exception.message,
+                result: {}
+            });
+        }
+    };
 
     // 댓글 작성
     /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
