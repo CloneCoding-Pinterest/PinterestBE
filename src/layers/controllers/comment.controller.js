@@ -1,10 +1,18 @@
 const e = require('express');
 const joi = require('joi');
+const { FormProvider } = require('../../modules/_.module.loader');
+
 const CommentService = require('../services/comment.service');
 const BaseController = require('./base.controller');
 
 class CommentController extends BaseController {
     CommentService = new CommentService();
+
+    formProvider;
+    constructor() {
+        super();
+        this.formProvider = new FormProvider();
+    }
 
     /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
     getComment = async (req, res, next) => {
@@ -13,19 +21,17 @@ class CommentController extends BaseController {
         try {
             const commentList = await this.CommentService.getComment(pinId);
 
-            return res.status(200).json({
-                isSuccess: true,
-                message: '댓글 조회에 성공했습니다.',
-                result: { commentList }
-            });
+            return res.status(200).json(
+                this.formProvider.getSuccessFormDto('댓글 조회에 성공했습니다.', {
+                    commentList
+                })
+            );
         } catch (err) {
-            console.log(err);
             const exception = this.exceptionHandler(err);
-            return res.status(exception.statusCode).json({
-                isSuccess: false,
-                message: exception.message,
-                result: {}
-            });
+
+            return res
+                .status(exception.statusCode)
+                .json(this.formProvider.getFailureFormDto(exception.message));
         }
     };
 
@@ -35,33 +41,30 @@ class CommentController extends BaseController {
         const { pinId, content } = req.body;
         const userId = res.locals.userId;
 
-        await joi
-            .object({
-                pinId: joi.number().required(),
-                userId: joi.number().required(),
-                content: joi.string().required()
-            })
-            .validateAsync({
-                pinId,
-                content,
-                userId
-            });
-
         try {
+            await joi
+                .object({
+                    pinId: joi.number().required(),
+                    userId: joi.number().required(),
+                    content: joi.string().required()
+                })
+                .validateAsync({
+                    pinId,
+                    content,
+                    userId
+                });
+
             const comment = await this.CommentService.createComment(pinId, content, userId);
-            res.status(200).json({
-                isSuccess: true,
-                message: '댓글 작성에 성공했습니다.',
-                result: { comment }
-            });
+            return res
+                .status(200)
+                .json(
+                    this.formProvider.getSuccessFormDto('댓글 작성에 성공했습니다.', { comment })
+                );
         } catch (err) {
-            console.log(err);
             const exception = this.exceptionHandler(err);
-            return res.status(exception.statusCode).json({
-                isSuccess: false,
-                message: exception.message,
-                result: {}
-            });
+            return res
+                .status(exception.statusCode)
+                .json(this.formProvider.getFailureFormDto(exception.message));
         }
     };
 
@@ -79,7 +82,6 @@ class CommentController extends BaseController {
                 result: { comment }
             });
         } catch (err) {
-            console.log(err);
             const exception = this.exceptionHandler(err);
             return res.status(exception.statusCode).json({
                 isSuccess: false,
@@ -101,7 +103,6 @@ class CommentController extends BaseController {
                 result: {}
             });
         } catch (err) {
-            console.log(err);
             const exception = this.exceptionHandler(err);
             return res.status(exception.statusCode).json({
                 isSuccess: false,
