@@ -23,6 +23,10 @@ module.exports = {
             picSize: {
                 allowNull: false,
                 type: Sequelize.STRING
+            },
+            picUrl: {
+                allowNull: false,
+                type: Sequelize.STRING
             }
         });
     },

@@ -31,11 +31,11 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 type: DataTypes.STRING
             },
-            picUrl: {
+            picSize: {
                 allowNull: false,
                 type: DataTypes.STRING
             },
-            picSize: {
+            picUrl: {
                 allowNull: false,
                 type: DataTypes.STRING
             }
