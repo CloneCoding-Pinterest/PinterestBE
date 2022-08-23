@@ -8,6 +8,16 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
+            userId: {
+                allowNull: false,
+                type: Sequelize.INTEGER,
+                onUpdate: 'cascade',
+                onDelete: 'cascade',
+                references: {
+                    model: 'Users', // company migration define
+                    key: 'userId'
+                }
+            },
             pinId: {
                 allowNull: false,
                 type: Sequelize.INTEGER,

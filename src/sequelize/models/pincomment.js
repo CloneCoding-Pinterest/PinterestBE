@@ -35,6 +35,12 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
     PinComment.associate = function (models) {
+        PinComment.belongsTo(models.User, {
+            foreignKey: 'userId', // PinComment.userId
+            targetKey: 'userId', // User.userId
+            onUpdate: 'cascade', // User.userId 가 변경되면 같이 변경됨
+            onDelete: 'cascade' // User.userId 가 사라지면 같이 사라짐
+        });
         PinComment.belongsTo(models.Pin, {
             foreignKey: 'pinId', // PinComment.pinId
             targetKey: 'pinId', // Pin.pinId
