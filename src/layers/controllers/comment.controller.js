@@ -10,8 +10,7 @@ class CommentController extends BaseController {
     /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
     createComment = async (req, res, next) => {
         const userId = 1;
-        const pinId = 1;
-        const { content } = req.body;
+        const { pinId, content } = req.body;
 
         try {
             const createComment = await this.CommentService.createComment(userId, pinId, content);
@@ -62,7 +61,7 @@ class CommentController extends BaseController {
     // 댓글 삭제
     deleteComment = async (req, res, next) => {
         const { commentId } = req.params;
-        const userId = 2;
+        const userId = 1;
 
         try {
             const deleteComment = await this.CommentService.deleteComment(commentId, userId);

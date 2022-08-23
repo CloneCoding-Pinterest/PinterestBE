@@ -42,7 +42,7 @@ class CommentService {
     };
     // 댓글 삭제
     // 유저와 연동해서 삭제 가능하게하기 만들어야함
-    deleteComment = async (commentId) => {
+    deleteComment = async (commentId, userId) => {
         const isExistsCommentByCommentId = await this.CommentRepository.isExistsCommentByCommentId(
             commentId
         );
