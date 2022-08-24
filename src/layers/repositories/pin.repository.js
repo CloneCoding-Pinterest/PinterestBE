@@ -11,6 +11,19 @@ class PinRepository {
         else return true;
     };
 
+    /**
+     *
+     * @param {number} pinId
+     * @returns { Promise<{pinId:number, title:string, content:string, picKey:string, picUrl:string, picSize:'Small'|'Medium'|'Large'} | null> }
+     */
+    findPinByPinId = async (pinId) => {
+        const findpin = await Pin.findOne({
+            where: { pinId: 154 },
+            raw: true
+        });
+        return findpin;
+    };
+
     findPicUrlByPinId = async (pinId) => {
         const findedPin = await Pin.findOne({
             where: { pinId },

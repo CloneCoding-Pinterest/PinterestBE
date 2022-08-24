@@ -1,15 +1,18 @@
 const UserRepository = require('../repositories/user.repository');
 const CommentRepository = require('../repositories/comment.repository');
+const PinRepository = require('../repositories/pin.repository');
 
 const { NotFoundException } = require('../../models/exception/custom.exception');
 
 class CommentService {
     #userRepository;
     #commentRepository;
+    #pinRepository;
 
     constructor() {
         this.#userRepository = new UserRepository();
         this.#commentRepository = new CommentRepository();
+        this.#pinRepository = new PinRepository();
     }
 
     getComment = async (pinId) => {
@@ -20,6 +23,8 @@ class CommentService {
     createComment = async (pinId, content, userId) => {
         const user = await this.#userRepository.findUserDetailByUserId(userId);
         if (!user) throw new NotFoundException('존재 하지 않는 유저입니다.');
+
+        await this.#pinRepository.findPinByPinId(pinId);
 
         const createComment = await this.#commentRepository.createComment(pinId, content, userId);
         const createdPinComment = await this.#commentRepository.createPinComment(
