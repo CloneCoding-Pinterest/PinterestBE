@@ -18,7 +18,7 @@ class PinService {
     /**
      * pinId, title, content, picUrl, picSize, picKey 로 이루어진 객체 에서 `picKey` 를 `제거`
      *
-     * @param { { pinId: number, title: string, content: string, picKey: string, picUrl: string, picSize: 'Small' | 'Medium' | 'Large' } } iPin
+     * @param { { pinId: number, title: string, content: string, picKey: string, picUrl: string, picSize: 'small' | 'medium' | 'large' } } iPin
      * @returns
      */
     #extractPicKeyFromPin = ({ picKey, ...others }) => {
@@ -28,9 +28,9 @@ class PinService {
     /**
      * pinId, title, content, picUrl, picSize 로 이루어진 객체와 `author` 문자열을 `결합`하여 반환합니다.
      *
-     * @param { { pinId: number, title: string, content: string, picUrl: string, picSize: 'Small' | 'Medium' | 'Large' } } iPin
+     * @param { { pinId: number, title: string, content: string, picUrl: string, picSize: 'small' | 'medium' | 'large' } } iPin
      * @param { string } author
-     * @returns { { pinId: number, title: string, content: string, picUrl: string, picSize: 'Small' | 'Medium' | 'Large', author: string } }
+     * @returns { { pinId: number, title: string, content: string, picUrl: string, picSize: 'small' | 'medium' | 'large', author: string } }
      */
     #appendAuthorIntoPin = (iPin, author) => {
         return { ...iPin, author };
@@ -82,16 +82,35 @@ class PinService {
 
     //핀 전체 조회
     getPinLists = async (page, count) => {
-        const result = await this.#pinRepository.findAllPins(page, count);
+        const pins = await this.#pinRepository.findAllPins(page, count);
+        if (pins === null) throw new Error('알 수 없는 이유로 Pin 조회에 실패했습니다.');
 
-        return result;
+        return pins.map((pin) => {
+            return {
+                pinId: pin['pinId'],
+                author: pin['User.UserDetail.nickname'],
+                title: pin['Pin.title'],
+                content: pin['Pin.content'],
+                picUrl: pin['Pin.picUrl'],
+                picSize: pin['Pin.picSize']
+            };
+        });
     };
 
     //핀 상세 조회
     getPin = async (pinId) => {
-        const result = await this.#pinRepository.findPin(pinId);
+        const pin = await this.#pinRepository.findPinByPinId(pinId);
+        if (!pin) throw new NotFoundException('존재 하지 않는 pin입니다.');
 
-        return result;
+        const userId = await this.#pinRepository.findUserIdByPinId(pinId);
+
+        const user = await this.#userRepository.findUserDetailByUserId(userId);
+
+        // 구조분해할당과 나머지 연산자를 이용한 객체의 요소 제거 입니다...
+        const pinWithoutPicKey = this.#extractPicKeyFromPin(pin);
+        const pinWithAuthor = this.#appendAuthorIntoPin(pinWithoutPicKey, user.nickname);
+
+        return pinWithAuthor;
     };
 
     updatePinByValues = async (pinId, userId, title, content) => {
@@ -134,7 +153,23 @@ class PinService {
         return result;
     };
 
-    //핀 삭제
+    deletePinByValues = async (pinId, userId) => {
+        const user = await this.#userRepository.findUserDetailByUserId(userId);
+        if (!user) throw new NotFoundException('존재 하지 않는 유저입니다.');
+
+        const isExistsUserPin = await this.#pinRepository.isExistsUserPinByUserIdAndPinId(
+            userId,
+            pinId
+        );
+        if (!isExistsUserPin) throw new Error('해당 유저가 작성한 pin이 없습니다.');
+
+        const isDeletedPin = await this.#pinRepository.deletePinByValues(pinId);
+
+        return isDeletedPin;
+    };
+    /**
+     * @deprecated
+     */
     deletePin = async (pinId, userId) => {
         await this.#pinRepository.deletePin(pinId, userId);
 
