@@ -153,7 +153,23 @@ class PinService {
         return result;
     };
 
-    //핀 삭제
+    deletePinByValues = async (pinId, userId) => {
+        const user = await this.#userRepository.findUserDetailByUserId(userId);
+        if (!user) throw new NotFoundException('존재 하지 않는 유저입니다.');
+
+        const isExistsUserPin = await this.#pinRepository.isExistsUserPinByUserIdAndPinId(
+            userId,
+            pinId
+        );
+        if (!isExistsUserPin) throw new Error('해당 유저가 작성한 pin이 없습니다.');
+
+        const isDeletedPin = await this.#pinRepository.deletePinByValues(pinId);
+
+        return isDeletedPin;
+    };
+    /**
+     * @deprecated
+     */
     deletePin = async (pinId, userId) => {
         await this.#pinRepository.deletePin(pinId, userId);
 

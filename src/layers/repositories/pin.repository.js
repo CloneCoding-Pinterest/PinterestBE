@@ -266,7 +266,23 @@ class PinRepository {
         return result;
     };
 
-    //핀 삭제
+    /**
+     *
+     * @param {number} pinId
+     * @returns
+     */
+    deletePinByValues = async (pinId) => {
+        const deletedPin = await Pin.destroy({
+            where: { pinId }
+        });
+
+        if (deletedPin === 1) return true;
+        else return false;
+    };
+
+    /**
+     * @deprecated
+     */
     deletePin = async (pinId, userId) => {
         await Pin.destroy({
             where: { pinId }

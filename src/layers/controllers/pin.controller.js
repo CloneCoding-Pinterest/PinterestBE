@@ -182,7 +182,7 @@ class PinController extends BaseController {
                     userId
                 });
 
-            await this.#pinService.deletePin(pinId, userId);
+            await this.#pinService.deletePinByValues(pinId, userId);
 
             return res
                 .status(200)
