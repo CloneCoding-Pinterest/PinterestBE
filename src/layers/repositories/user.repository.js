@@ -38,7 +38,7 @@ class UserRepository {
     /**
      *
      * @param {*} userId
-     * @returns { { userId: number, detailId: number, nickname: string } }
+     * @returns { Promise<{ userId: number, detailId: number, nickname: string } | null> }
      */
     findUserDetailByUserId = async (userId) => {
         const user = await User.findOne({
