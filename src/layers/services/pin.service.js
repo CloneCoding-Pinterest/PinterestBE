@@ -99,9 +99,18 @@ class PinService {
 
     //핀 상세 조회
     getPin = async (pinId) => {
-        const result = await this.#pinRepository.findPin(pinId);
+        const pin = await this.#pinRepository.findPinByPinId(pinId);
+        if (!pin) throw new NotFoundException('존재 하지 않는 pin입니다.');
 
-        return result;
+        const userId = await this.#pinRepository.findUserIdByPinId(pinId);
+
+        const user = await this.#userRepository.findUserDetailByUserId(userId);
+
+        // 구조분해할당과 나머지 연산자를 이용한 객체의 요소 제거 입니다...
+        const pinWithoutPicKey = this.#extractPicKeyFromPin(pin);
+        const pinWithAuthor = this.#appendAuthorIntoPin(pinWithoutPicKey, user.nickname);
+
+        return pinWithAuthor;
     };
 
     updatePinByValues = async (pinId, userId, title, content) => {

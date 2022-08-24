@@ -121,7 +121,7 @@ class PinController extends BaseController {
 
             return res
                 .status(200)
-                .json(this.#formProvider.getSuccessFormDto('Pin 조회에 성공했습니다.', pin));
+                .json(this.#formProvider.getSuccessFormDto('Pin 조회에 성공했습니다.', { pin }));
         } catch (err) {
             const exception = this.exceptionHandler(err);
             return res

@@ -11,6 +11,29 @@ class PinRepository {
         else return true;
     };
 
+    findUserIdByPinId = async (pinId) => {
+        const userPin = await UserPin.findOne({
+            where: { pinId },
+            attributes: ['userId'],
+            raw: true
+        });
+
+        return userPin.userId;
+    };
+
+    /**
+     *
+     * @param {number} pinId
+     * @returns { Promise<{pinId:number, title:string, content:string, picKey:string, picUrl:string, picSize:'Small'|'Medium'|'Large'} | null> }
+     */
+    findPinByPinId = async (pinId) => {
+        const findpin = await Pin.findOne({
+            where: { pinId },
+            raw: true
+        });
+        return findpin;
+    };
+
     findPicUrlByPinId = async (pinId) => {
         const findedPin = await Pin.findOne({
             where: { pinId },
@@ -53,7 +76,9 @@ class PinRepository {
         return createdUserPinResult;
     };
 
-    //핀 등록
+    /**
+     * @deprecated
+     */
     createPin = async (userId, title, content, picKey, picUrl, picSize) => {
         //Pin 테이블 등록
         const pinResult = await Pin.create({
@@ -135,7 +160,9 @@ class PinRepository {
         return pins;
     };
 
-    //핀 상세 조회
+    /**
+     * @deprecated
+     */
     findPin = async (pinId) => {
         //UserPin 테이블 조회
         const pinResult = await UserPin.findOne({
