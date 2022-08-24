@@ -11,6 +11,8 @@ module.exports = {
             userId: {
                 allowNull: false,
                 type: Sequelize.INTEGER,
+                onUpdate: 'cascade',
+                onDelete: 'cascade',
                 references: {
                     model: 'Users', // company migration define
                     key: 'userId'
@@ -19,6 +21,8 @@ module.exports = {
             pinId: {
                 allowNull: false,
                 type: Sequelize.INTEGER,
+                onUpdate: 'cascade',
+                onDelete: 'cascade',
                 references: {
                     model: 'Pins', // company migration define
                     key: 'pinId'
