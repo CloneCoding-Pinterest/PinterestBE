@@ -49,6 +49,7 @@ class PinController extends BaseController {
         try {
             const page = Number(req.query.page || 1); //값이 없다면 기본값 1페이지
             const count = Number(req.query.count || 18); //값이 없다면 기본값 핀 18개
+
             const pinList = await this.#pinService.getPinLists(page, count);
 
             return res
