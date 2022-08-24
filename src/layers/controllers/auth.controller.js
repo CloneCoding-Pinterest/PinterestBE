@@ -66,6 +66,30 @@ class AuthController extends BaseController {
                 .json(this.#formProvider.getFailureFormDto(exception.message));
         }
     };
+
+    /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
+    deleteAllToken = async (req, res, next) => {
+        try {
+            const { refreshToken } = await joi
+                .object({
+                    refreshToken: joi.string().required()
+                })
+                .validateAsync({
+                    refreshToken: req?.query?.refreshToken
+                });
+
+            await this.#authService.deleteAllToken(refreshToken);
+
+            return res
+                .status(200)
+                .json(this.#formProvider.getFailureFormDto('로그아웃에 성공하셨습니다.'));
+        } catch (err) {
+            const exception = this.exceptionHandler(err);
+            return res
+                .status(exception.statusCode)
+                .json(this.#formProvider.getFailureFormDto(exception.message));
+        }
+    };
 }
 
 module.exports = AuthController;

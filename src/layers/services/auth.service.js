@@ -2,7 +2,11 @@ const e = require('express');
 const AuthRepository = require('../repositories/auth.repository');
 const UserRepository = require('../repositories/user.repository');
 const { KakaoProvider, JwtProvider } = require('../../modules/_.module.loader');
-const { NotFoundException } = require('../../models/_.models.loader');
+const {
+    NotFoundException,
+    UnauthorizedException,
+    UnkownException
+} = require('../../models/_.models.loader');
 
 /**
  * \# 키워드를 붙이면 해당 클래스의 프로퍼티 안에서 `만` 호출이 가능하다.
@@ -29,10 +33,9 @@ class AuthService {
     registerAccount = async (kakaoTokenDto) => {
         // true or false
 
-        const userData = await this.#kakaoProvider.getMockUserDataByKakaoAccessToken(
+        const userData = await this.#kakaoProvider.getUserDataByKakaoAccessToken(
             kakaoTokenDto.accessToken
         );
-        // kakaoTokenDto.accessToken
 
         try {
             const providedId = userData.id;
@@ -51,7 +54,7 @@ class AuthService {
                             kakaoTokenDto.accessToken,
                             kakaoTokenDto.refreshToken
                         ))(),
-                    (async () => await this.#authRepository.uploadPinToken())(),
+                    (async () => await this.#authRepository.uploadEmptyPinTokenRow())(),
                     (async () =>
                         await this.#userRepository.uploadUserDetail(nickname, email, ageRange))()
                 ]);
@@ -71,6 +74,11 @@ class AuthService {
                     userId: uploadedUser.userId,
                     nickname: userData.kakao_account.profile.nickname
                 });
+
+                await this.#authRepository.apeendTokenIntoPinTokenRow(
+                    uploadedPinToken.pinTokenId,
+                    refreshToken
+                );
 
                 return { accessToken, refreshToken };
             } else {
@@ -92,7 +100,10 @@ class AuthService {
                     nickname: userData.kakao_account.profile.nickname
                 });
 
-                await this.#authRepository.updatePinToken(findedUser.pinTokenId, refreshToken);
+                await this.#authRepository.apeendTokenIntoPinTokenRow(
+                    findedUser.pinTokenId,
+                    refreshToken
+                );
 
                 return { accessToken, refreshToken };
             }
@@ -108,7 +119,7 @@ class AuthService {
      */
     publichAccessToken = async (refreshToken) => {
         try {
-            /** @type { userId: number, nickname: string }  */
+            /** @type { { userId: number, nickname: string } }  */
             const payload = this.#jwtProvider.verifyToken(refreshToken);
             const findedUser = await this.#userRepository.findUserByUserId(payload.userId);
             if (findedUser === null)
@@ -117,6 +128,31 @@ class AuthService {
             const accessToken = this.#jwtProvider.signAccessToken({ userId: findedUser.userId });
 
             return { accessToken, refreshToken };
+        } catch (err) {
+            throw err;
+        }
+    };
+
+    /**
+     *
+     * @param { string } refreshToken
+     */
+    deleteAllToken = async (refreshToken) => {
+        try {
+            /** @type { { userId: number, nickname: string } }  */
+            const payload = this.#jwtProvider.verifyToken(refreshToken);
+
+            const user = await this.#userRepository.findUserByUserId(payload.userId);
+
+            const logOut = await this.#authRepository.popRefreshTokenFromPinTokenRow(
+                user.pinTokenId
+            );
+            if (logOut === null)
+                throw new UnkownException('알 수 없는 에러로 로그아웃에 실패하였습니다.');
+            else if (logOut === false)
+                throw new UnauthorizedException('이미 로그아웃한 사용자입니다.');
+
+            console.log(user);
         } catch (err) {
             throw err;
         }
