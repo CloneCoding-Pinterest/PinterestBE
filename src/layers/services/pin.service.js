@@ -15,7 +15,50 @@ class PinService {
         this.#userRepository = new UserRepository();
     }
 
-    //핀 등록
+    /**
+     * pinId, title, content, picUrl, picSize, picKey 로 이루어진 객체 에서 `picKey` 를 `제거`
+     *
+     * @param { { pinId: number, title: string, content: string, picKey: string, picUrl: string, picSize: 'Small' | 'Medium' | 'Large' } } iPin
+     * @returns
+     */
+    #extractPicKeyFromPin = ({ picKey, ...others }) => {
+        return others;
+    };
+
+    /**
+     * pinId, title, content, picUrl, picSize 로 이루어진 객체와 `author` 문자열을 `결합`하여 반환합니다.
+     *
+     * @param { { pinId: number, title: string, content: string, picUrl: string, picSize: 'Small' | 'Medium' | 'Large' } } iPin
+     * @param { string } author
+     * @returns { { pinId: number, title: string, content: string, picUrl: string, picSize: 'Small' | 'Medium' | 'Large', author: string } }
+     */
+    #appendAuthorIntoPin = (iPin, author) => {
+        return { ...iPin, author };
+    };
+
+    createPinByValues = async (userId, title, content, picKey, picUrl, picSize) => {
+        const user = await this.#userRepository.findUserDetailByUserId(userId);
+        if (!user) throw new NotFoundException('존재 하지 않는 유저입니다.');
+
+        const createdPin = await this.#pinRepository.createPinByValues(
+            title,
+            content,
+            picKey,
+            picUrl,
+            picSize
+        );
+        await this.#pinRepository.createUserPinByPinIdAndUserId(userId, createdPin.pinId);
+
+        // 구조분해할당과 나머지 연산자를 이용한 객체의 요소 제거 입니다...
+        const pinWithoutPicKey = this.#extractPicKeyFromPin(createdPin);
+        const pinWithAuthor = this.#appendAuthorIntoPin(pinWithoutPicKey, user.nickname);
+
+        return pinWithAuthor;
+    };
+
+    /**
+     * @deprecated
+     */
     createPin = async (userId, title, content, picKey, picUrl, picSize) => {
         const user = await this.#userRepository.findUserDetailByUserId(userId);
         if (!user) throw new NotFoundException('존재 하지 않는 유저입니다.');
@@ -51,7 +94,38 @@ class PinService {
         return result;
     };
 
-    //핀 수정
+    updatePinByValues = async (pinId, userId, title, content) => {
+        const user = await this.#userRepository.findUserDetailByUserId(userId);
+        if (!user) throw new NotFoundException('존재 하지 않는 유저입니다.');
+
+        const isExistsUserPin = await this.#pinRepository.isExistsUserPinByUserIdAndPinId(
+            userId,
+            pinId
+        );
+        if (!isExistsUserPin) throw new Error('해당 유저가 작성한 pin이 없습니다.');
+
+        const isUpdatedPin = await this.#pinRepository.updatePinByValues(
+            pinId,
+            userId,
+            title,
+            content
+        );
+        if (isUpdatedPin === null) throw new Error('알 수 없는 이유로 Pin 수정에 실패했습니다.');
+
+        const picUrl = await this.#pinRepository.findPicUrlByPinId(pinId);
+
+        return {
+            pinId,
+            author: user.nickname,
+            title,
+            content,
+            picUrl
+        };
+    };
+
+    /**
+     * @deprecated
+     */
     updatePin = async (pinId, userId, title, content) => {
         await this.#pinRepository;
 

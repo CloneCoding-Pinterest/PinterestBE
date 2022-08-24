@@ -1,4 +1,5 @@
 const e = require('express');
+const joi = require('joi');
 const PinService = require('../services/pin.service');
 const { FormProvider } = require('../../modules/_.module.loader');
 const BaseController = require('./base.controller');
@@ -23,7 +24,25 @@ class PinController extends BaseController {
             const picUrl = req?.file?.location;
             const picKey = req?.file?.key;
 
-            const pin = await this.#pinService.createPin(
+            await joi
+                .object({
+                    userId: joi.number().required(),
+                    title: joi.string().trim().required(),
+                    content: joi.string().trim().required(),
+                    picSize: joi.string().valid('Small', 'Medium', 'Large').required(),
+                    picUrl: joi.string().trim().required(),
+                    picKey: joi.string().trim().required()
+                })
+                .validateAsync({
+                    title,
+                    content,
+                    picSize,
+                    userId,
+                    picUrl,
+                    picKey
+                });
+
+            const pin = await this.#pinService.createPinByValues(
                 userId,
                 title,
                 content,
@@ -31,6 +50,15 @@ class PinController extends BaseController {
                 picUrl,
                 picSize
             );
+
+            // const pin = await this.#pinService.createPin(
+            //     userId,
+            //     title,
+            //     content,
+            //     picKey,
+            //     picUrl,
+            //     picSize
+            // );
 
             return res
                 .status(200)
@@ -49,6 +77,16 @@ class PinController extends BaseController {
         try {
             const page = Number(req.query.page || 1); //값이 없다면 기본값 1페이지
             const count = Number(req.query.count || 18); //값이 없다면 기본값 핀 18개
+
+            await joi
+                .object({
+                    page: joi.number().required(),
+                    count: joi.number().required()
+                })
+                .validateAsync({
+                    page,
+                    count
+                });
 
             const pinList = await this.#pinService.getPinLists(page, count);
 
@@ -71,6 +109,14 @@ class PinController extends BaseController {
         const { pinId } = req.params;
 
         try {
+            await joi
+                .object({
+                    pinId: joi.number().required()
+                })
+                .validateAsync({
+                    pinId
+                });
+
             const pin = await this.#pinService.getPin(pinId);
 
             return res
@@ -90,14 +136,27 @@ class PinController extends BaseController {
         const { pinId } = req.params;
         const userId = res.locals.userId;
         const { title, content } = req.body;
-        //토큰 구현 전이라 임의 값으로 설정
 
         try {
-            const pin = await this.#pinService.updatePin(pinId, userId, title, content);
+            await joi
+                .object({
+                    userId: joi.number().required(),
+                    pinId: joi.number().required(),
+                    title: joi.string().trim().required(),
+                    content: joi.string().trim().required()
+                })
+                .validateAsync({
+                    userId,
+                    pinId,
+                    title,
+                    content
+                });
+
+            const pin = await this.#pinService.updatePinByValues(pinId, userId, title, content);
 
             return res
                 .status(200)
-                .json(this.#formProvider.getSuccessFormDto('Pin 수정에 성공했습니다.', pin));
+                .json(this.#formProvider.getSuccessFormDto('Pin 수정에 성공했습니다.', { pin }));
         } catch (err) {
             const exception = this.exceptionHandler(err);
             return res
@@ -111,9 +170,18 @@ class PinController extends BaseController {
     deletePin = async (req, res, next) => {
         const { pinId } = req.params;
         const userId = res.locals.userId;
-        //토큰 구현 전이라 임의 값으로 설정
 
         try {
+            await joi
+                .object({
+                    pinId: joi.number().required(),
+                    userId: joi.number().required()
+                })
+                .validateAsync({
+                    pinId,
+                    userId
+                });
+
             await this.#pinService.deletePin(pinId, userId);
 
             return res
