@@ -59,7 +59,7 @@ class PinService {
     //핀 전체 조회
     getPinLists = async (page, count) => {
         const pins = await this.#pinRepository.findAllPins(page, count);
-        if (pins === null) throw new Error('알 수 없는 이유로 Pin 조회에 실패했습니다.');
+        if (pins === null) throw new UnkownException('알 수 없는 이유로 Pin 조회에 실패했습니다.');
 
         return pins.map((pin) => {
             return {
@@ -97,7 +97,7 @@ class PinService {
             userId,
             pinId
         );
-        if (!isExistsUserPin) throw new Error('해당 유저가 작성한 pin이 없습니다.');
+        if (!isExistsUserPin) throw new NotFoundException('해당 유저가 작성한 pin이 없습니다.');
 
         const isUpdatedPin = await this.#pinRepository.updatePinByValues(
             pinId,
@@ -105,7 +105,8 @@ class PinService {
             title,
             content
         );
-        if (isUpdatedPin === null) throw new Error('알 수 없는 이유로 Pin 수정에 실패했습니다.');
+        if (isUpdatedPin === null)
+            throw new UnkownException('알 수 없는 이유로 Pin 수정에 실패했습니다.');
 
         const picUrl = await this.#pinRepository.findPicUrlByPinId(pinId);
 
@@ -126,7 +127,7 @@ class PinService {
             userId,
             pinId
         );
-        if (!isExistsUserPin) throw new Error('해당 유저가 작성한 pin이 없습니다.');
+        if (!isExistsUserPin) throw new NotFoundException('해당 유저가 작성한 pin이 없습니다.');
 
         const isDeletedPin = await this.#pinRepository.deletePinByValues(pinId);
 

@@ -22,7 +22,7 @@ class CommentService {
      */
     getComment = async (pinId) => {
         const pin = await this.#pinRepository.findPinByPinId(pinId);
-        if (pin === null) throw new Error('존재하지 않는 핀 입니다.');
+        if (pin === null) throw new NotFoundException('존재하지 않는 핀 입니다.');
 
         return await this.#commentRepository.getComment(pinId);
     };
@@ -39,7 +39,7 @@ class CommentService {
         if (!user) throw new NotFoundException('존재 하지 않는 유저입니다.');
 
         const pin = await this.#pinRepository.findPinByPinId(pinId);
-        if (pin === null) throw new Error('존재하지 않는 핀 입니다.');
+        if (pin === null) throw new NotFoundException('존재하지 않는 핀 입니다.');
 
         const createComment = await this.#commentRepository.createComment(pinId, content, userId);
         const createdPinComment = await this.#commentRepository.createPinComment(
@@ -72,12 +72,12 @@ class CommentService {
         const isFindedPinComment = await this.#commentRepository.findPinCommentByCommentId(
             commentId
         );
-        if (isFindedPinComment === null) throw new Error('존재하지 않는 Pin 입니다.');
+        if (isFindedPinComment === null) throw new NotFoundException('존재하지 않는 Pin 입니다.');
 
         const isExistsCommentByCommentId = await this.#commentRepository.isExistsCommentByCommentId(
             commentId
         );
-        if (!isExistsCommentByCommentId) throw new Error('존재하지 않는 댓글입니다.');
+        if (!isExistsCommentByCommentId) throw new NotFoundException('존재하지 않는 댓글입니다.');
 
         const comment = await this.#commentRepository.updateComment(commentId, content, userId);
 
@@ -96,14 +96,12 @@ class CommentService {
         const isFindedPinComment = await this.#commentRepository.findPinCommentByCommentId(
             commentId
         );
-        if (isFindedPinComment === null) throw new Error('존재하지 않는 Pin 입니다.');
+        if (isFindedPinComment === null) throw new NotFoundException('존재하지 않는 Pin 입니다.');
 
         const isExistsCommentByCommentId = await this.#commentRepository.isExistsCommentByCommentId(
             commentId
         );
-        if (!isExistsCommentByCommentId) {
-            throw new Error('존재하지 않는 댓글입니다.');
-        }
+        if (!isExistsCommentByCommentId) throw new NotFoundException('존재하지 않는 댓글입니다.');
 
         const deleteComment = await this.#commentRepository.deleteComment(commentId, userId);
         await this.#commentRepository.deletePinComment(commentId);
