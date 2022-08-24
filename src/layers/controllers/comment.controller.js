@@ -55,7 +55,7 @@ class CommentController extends BaseController {
                 .object({
                     pinId: joi.number().required(),
                     userId: joi.number().required(),
-                    content: joi.string().required()
+                    content: joi.string().trim().required()
                 })
                 .validateAsync({
                     pinId,
@@ -87,7 +87,7 @@ class CommentController extends BaseController {
             await joi
                 .object({
                     commentId: joi.number().required(),
-                    content: joi.string().required(),
+                    content: joi.string().trim().required(),
                     userId: joi.number().required()
                 })
                 .validateAsync({
