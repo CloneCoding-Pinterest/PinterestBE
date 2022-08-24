@@ -1,6 +1,38 @@
 const { User, UserDetail, Pin, UserPin } = require('../../sequelize/models');
 
 class PinRepository {
+    /**
+     * @param { string } title
+     * @param { string } content
+     * @param { string } picKey
+     * @param { string } picUrl
+     * @param { 'Small' | 'Medium' | 'Large' } picSize
+     * @returns { Promise<{ pinId: number, title: string, content: string, picKey: string, picUrl: string, picSize: 'Small' | 'Medium' | 'Large' }> }
+     */
+    createPinByValues = async (title, content, picKey, picUrl, picSize) => {
+        const createdPinResult = await Pin.create({
+            title,
+            content,
+            picKey,
+            picUrl,
+            picSize
+        });
+
+        /** @type { { pinId: number, title: string, content: string, picKey: string, picUrl: string, picSize: 'Small' | 'Medium' | 'Large' } } */
+        const createdPin = createdPinResult?.dataValues;
+        return createdPin;
+    };
+
+    /**
+     * @param { number } userId
+     * @param { number } pinId
+     */
+    createUserPinByPinIdAndUserId = async (userId, pinId) => {
+        const createdUserPinResult = await UserPin.create({ userId, pinId });
+
+        console.log(createdUserPinResult);
+    };
+
     //핀 등록
     createPin = async (userId, title, content, picKey, picUrl, picSize) => {
         //Pin 테이블 등록

@@ -1,4 +1,5 @@
 const e = require('express');
+const joi = require('joi');
 const PinService = require('../services/pin.service');
 const { FormProvider } = require('../../modules/_.module.loader');
 const BaseController = require('./base.controller');
@@ -23,7 +24,25 @@ class PinController extends BaseController {
             const picUrl = req?.file?.location;
             const picKey = req?.file?.key;
 
-            const pin = await this.#pinService.createPin(
+            await joi
+                .object({
+                    userId: joi.number().required(),
+                    title: joi.string().trim().required(),
+                    content: joi.string().trim().required(),
+                    picSize: joi.string().valid('Small', 'Medium', 'Large').required(),
+                    picUrl: joi.string().trim().required(),
+                    picKey: joi.string().trim().required()
+                })
+                .validateAsync({
+                    title,
+                    content,
+                    picSize,
+                    userId,
+                    picUrl,
+                    picKey
+                });
+
+            const pin = await this.#pinService.createPinByValues(
                 userId,
                 title,
                 content,
@@ -31,6 +50,15 @@ class PinController extends BaseController {
                 picUrl,
                 picSize
             );
+
+            // const pin = await this.#pinService.createPin(
+            //     userId,
+            //     title,
+            //     content,
+            //     picKey,
+            //     picUrl,
+            //     picSize
+            // );
 
             return res
                 .status(200)
