@@ -14,10 +14,14 @@ class CommentService {
         this.#commentRepository = new CommentRepository();
         this.#pinRepository = new PinRepository();
     }
-    
+
     // 댓글 조회
     getComment = async (pinId) => {
+        const pin = await this.#pinRepository.findPinByPinId(pinId);
+        if (pin === null) throw new Error('존재하지 않는 핀 입니다.');
+
         return await this.#commentRepository.getComment(pinId);
+        
     };
 
     // 댓글 작성
@@ -49,6 +53,9 @@ class CommentService {
         const user = await this.#userRepository.findUserDetailByUserId(userId);
         if (!user) throw new NotFoundException('존재 하지 않는 유저입니다.');
 
+        const pin = await this.#pinRepository.findPinByPinId(pinId);
+        if (pin === null) throw new Error('존재하지 않는 핀 입니다.');
+
         const isExistsCommentByCommentId = await this.#commentRepository.isExistsCommentByCommentId(
             commentId
         );
@@ -67,6 +74,9 @@ class CommentService {
     deleteComment = async (commentId, userId) => {
         const user = await this.#userRepository.findUserDetailByUserId(userId);
         if (!user) throw new NotFoundException('존재 하지 않는 유저입니다.');
+
+        const pin = await this.#pinRepository.findPinByPinId(pinId);
+        if (pin === null) throw new Error('존재하지 않는 핀 입니다.');
 
         const isExistsCommentByCommentId = await this.#commentRepository.isExistsCommentByCommentId(
             commentId
