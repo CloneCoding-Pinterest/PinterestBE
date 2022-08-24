@@ -4,6 +4,7 @@ const joi = require('joi');
 const AuthService = require('../services/auth.service');
 const BaseController = require('../controllers/base.controller');
 
+const { FormProvider } = require('../../modules/_.module.loader');
 const { CustomException } = require('../../models/_.models.loader');
 
 /**
@@ -12,10 +13,12 @@ const { CustomException } = require('../../models/_.models.loader');
  */
 class AuthController extends BaseController {
     #authService;
+    #formProvider;
 
     constructor() {
         super();
         this.#authService = new AuthService();
+        this.#formProvider = new FormProvider();
     }
 
     /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
@@ -31,19 +34,16 @@ class AuthController extends BaseController {
 
             const result = await this.#authService.registerAccount(kakaoDto);
 
-            return res.status(200).json({
-                isSuccess: true,
-                message: '카카오 로그인에 성공하셨습니다.',
-                result
-            });
+            return res
+                .status(200)
+                .json(
+                    this.#formProvider.getSuccessFormDto('카카오 로그인에 성공하였습니다.', result)
+                );
         } catch (err) {
-            console.log(err);
             const exception = this.exceptionHandler(err);
-            return res.status(exception.statusCode).json({
-                isSuccess: false,
-                message: exception.message,
-                result: {}
-            });
+            return res
+                .status(exception.statusCode)
+                .json(this.#formProvider.getFailureFormDto(exception.message));
         }
     };
 
@@ -55,18 +55,39 @@ class AuthController extends BaseController {
                 .required()
                 .validateAsync(req?.query?.refreshToken);
 
-            return res.status(200).json({
-                isSuccess: true,
-                message: '재 로그인에 성공하셨습니다.',
-                result: { refreshToken }
-            });
+            const token = await this.#authService.publichAccessToken(refreshToken);
+            return res
+                .status(200)
+                .json(this.#formProvider.getFailureFormDto('재 로그인에 성공하셨습니다.', token));
         } catch (err) {
             const exception = this.exceptionHandler(err);
-            return res.status(exception.statusCode).json({
-                isSuccess: false,
-                message: exception.message,
-                result: {}
-            });
+            return res
+                .status(exception.statusCode)
+                .json(this.#formProvider.getFailureFormDto(exception.message));
+        }
+    };
+
+    /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
+    deleteAllToken = async (req, res, next) => {
+        try {
+            const { refreshToken } = await joi
+                .object({
+                    refreshToken: joi.string().required()
+                })
+                .validateAsync({
+                    refreshToken: req?.query?.refreshToken
+                });
+
+            await this.#authService.deleteAllToken(refreshToken);
+
+            return res
+                .status(200)
+                .json(this.#formProvider.getFailureFormDto('로그아웃에 성공하셨습니다.'));
+        } catch (err) {
+            const exception = this.exceptionHandler(err);
+            return res
+                .status(exception.statusCode)
+                .json(this.#formProvider.getFailureFormDto(exception.message));
         }
     };
 }

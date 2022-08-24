@@ -20,6 +20,7 @@ class AuthRepository {
         if (pinToken === null) return false;
         else return true;
     };
+
     /**
      * 카카오의 사용자 정보 받아오기 API 를 통해 받은 id 값을 기준으로 DB 에서 TokenId 탐색.
      *
@@ -62,7 +63,7 @@ class AuthRepository {
         return createdSnsToken;
     };
 
-    uploadPinToken = async () => {
+    uploadEmptyPinTokenRow = async () => {
         const pinToken = await PinTokens.create({});
 
         /**  @type { { pinTokenId: number, refreshToken: string } } */
@@ -83,6 +84,44 @@ class AuthRepository {
         );
 
         return;
+    };
+
+    apeendTokenIntoPinTokenRow = async (pinTokenId, refreshToken) => {
+        const pinTokenRow = await PinTokens.update(
+            {
+                refreshToken
+            },
+            {
+                where: {
+                    pinTokenId
+                }
+            }
+        );
+    };
+
+    /**
+     * true 일 때는, 로그아웃 성공
+     * false 일 때는, 이미 로그아웃한 사용자
+     * null 일 때는, 중복 요청이나 알 수 없는 에러
+     *
+     * @param { number } pinTokenId
+     * @returns { Promise<boolean | null > }
+     */
+    popRefreshTokenFromPinTokenRow = async (pinTokenId) => {
+        const pinTokenRow = await PinTokens.update(
+            {
+                refreshToken: null
+            },
+            {
+                where: {
+                    pinTokenId
+                }
+            }
+        );
+
+        if (pinTokenRow[0] > 2) return null;
+        else if (pinTokenRow[0] === 1) return true;
+        else return false;
     };
 }
 

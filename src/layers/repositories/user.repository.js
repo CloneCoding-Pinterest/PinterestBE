@@ -7,6 +7,13 @@ const { User, UserDetail } = require('../../sequelize/models');
 class UserRepository {
     constructor() {}
 
+    isExistsUserByUserId = async (userId) => {
+        const user = await User.findByPk(userId);
+
+        if (user === null) return false;
+        else return true;
+    };
+
     /**
      * @param { number } userId
      * @returns { Promise<{ userId: number, snsTokenId: number, pinTokenId: number, detailId: number } | null> }
@@ -25,6 +32,37 @@ class UserRepository {
             const findedUser = user.dataValues;
 
             return findedUser;
+        }
+    };
+
+    /**
+     *
+     * @param {*} userId
+     * @returns { Promise<{ userId: number, detailId: number, nickname: string } | null> }
+     */
+    findUserDetailByUserId = async (userId) => {
+        const user = await User.findOne({
+            where: {
+                userId
+            },
+            attributes: ['userId', 'detailId'],
+            raw: true,
+            include: [
+                {
+                    model: UserDetail,
+                    attributes: ['detailId', 'nickname'],
+                    raw: true
+                }
+            ]
+        });
+
+        if (user === null) return null;
+        else {
+            return {
+                userId: user['userId'],
+                detailId: user['detailId'],
+                nickname: user['UserDetail.nickname']
+            };
         }
     };
 
