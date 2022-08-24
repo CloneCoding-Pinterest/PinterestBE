@@ -1,6 +1,34 @@
 const { User, UserDetail, Comment, PinComment } = require('../../sequelize/models');
 
 class CommentRepository {
+    /**
+     * PinComment 테이블에 CommentId 가 존재하는 지 확인합니다.
+     * 해당 테이블에 CommentId 가 없다면, Pin 이 삭죄된 경우입니다.
+     *
+     * @param {*} commentId
+     * @returns { Promise<{ pinCommentId: number, userId: number, pinId: number, commentId: number } | null > }
+     */
+    findPinCommentByCommentId = async (commentId) => {
+        const findedComment = await PinComment.findOne({ where: { commentId }, raw: true });
+
+        return findedComment;
+    };
+
+    // 댓글 존재 유무 확인
+    isExistsCommentByCommentId = async (commentId) => {
+        const findCommentId = await Comment.findOne({ where: { commentId } });
+
+        console.log(findCommentId);
+
+        return findCommentId;
+    };
+
+    // 댓글 작성자 찾기
+    findByUserId = async (userId) => {
+        const findByUserId = await PinComment.findOne({ where: { userId } });
+        return findByUserId;
+    };
+
     getComment = async (pinId) => {
         const findedCommentList = await PinComment.findAll({
             include: [
@@ -86,16 +114,6 @@ class CommentRepository {
     deleteComment = async (commentId) => {
         const deleteComment = await Comment.destroy({ where: { commentId } });
         return deleteComment;
-    };
-    // 댓글 존재 유무 확인
-    isExistsCommentByCommentId = async (commentId) => {
-        const findCommentId = await Comment.findOne({ where: { commentId } });
-        return findCommentId;
-    };
-    // 댓글 작성자 찾기
-    findByUserId = async (userId) => {
-        const findByUserId = await PinComment.findOne({ where: { userId } });
-        return findByUserId;
     };
 }
 

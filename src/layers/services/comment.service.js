@@ -15,16 +15,25 @@ class CommentService {
         this.#pinRepository = new PinRepository();
     }
 
-    // 댓글 조회
+    /**
+     *
+     * @param { number } pinId
+     * @returns { Promise<{ commentId: any, content: any, createdAt: any, author: any }> }
+     */
     getComment = async (pinId) => {
         const pin = await this.#pinRepository.findPinByPinId(pinId);
         if (pin === null) throw new Error('존재하지 않는 핀 입니다.');
 
         return await this.#commentRepository.getComment(pinId);
-        
     };
 
-    // 댓글 작성
+    /**
+     *
+     * @param { number } pinId
+     * @param { string } content
+     * @param { number } userId
+     * @returns { Promise<{ author: string, commentId: number, content: string, createdAt: Date }>}
+     */
     createComment = async (pinId, content, userId) => {
         const user = await this.#userRepository.findUserDetailByUserId(userId);
         if (!user) throw new NotFoundException('존재 하지 않는 유저입니다.');
@@ -48,35 +57,46 @@ class CommentService {
 
         return comment;
     };
-    // 댓글 수정
+
+    /**
+     *
+     * @param { number } commentId
+     * @param { string } content
+     * @param { number } userId
+     * @returns  { Promise<{ commentId: any, author: any, content: any,createdAt: Date }>}
+     */
     updateComment = async (commentId, content, userId) => {
         const user = await this.#userRepository.findUserDetailByUserId(userId);
         if (!user) throw new NotFoundException('존재 하지 않는 유저입니다.');
 
-        const pin = await this.#pinRepository.findPinByPinId(pinId);
-        if (pin === null) throw new Error('존재하지 않는 핀 입니다.');
+        const isFindedPinComment = await this.#commentRepository.findPinCommentByCommentId(
+            commentId
+        );
+        if (isFindedPinComment === null) throw new Error('존재하지 않는 Pin 입니다.');
 
         const isExistsCommentByCommentId = await this.#commentRepository.isExistsCommentByCommentId(
             commentId
         );
-        if (!isExistsCommentByCommentId) {
-            throw new Error('존재하지 않는 댓글입니다.');
-        }
-        // const findByUserId = await this.CommentRepository.findByUserId(userId);
-        // if (!findByUserId) {
-        //     throw new Error('댓글 작성자가 아닙니다.');
-        // }
+        if (!isExistsCommentByCommentId) throw new Error('존재하지 않는 댓글입니다.');
+
         const comment = await this.#commentRepository.updateComment(commentId, content, userId);
 
         return comment;
     };
-    // 댓글 삭제
+
+    /**
+     *
+     * @param { number } commentId
+     * @param { number } userId
+     */
     deleteComment = async (commentId, userId) => {
         const user = await this.#userRepository.findUserDetailByUserId(userId);
         if (!user) throw new NotFoundException('존재 하지 않는 유저입니다.');
 
-        const pin = await this.#pinRepository.findPinByPinId(pinId);
-        if (pin === null) throw new Error('존재하지 않는 핀 입니다.');
+        const isFindedPinComment = await this.#commentRepository.findPinCommentByCommentId(
+            commentId
+        );
+        if (isFindedPinComment === null) throw new Error('존재하지 않는 Pin 입니다.');
 
         const isExistsCommentByCommentId = await this.#commentRepository.isExistsCommentByCommentId(
             commentId
@@ -84,11 +104,6 @@ class CommentService {
         if (!isExistsCommentByCommentId) {
             throw new Error('존재하지 않는 댓글입니다.');
         }
-
-        // const findByUserId = await this.CommentRepository.findByUserId(userId);
-        // if (!findByUserId) {
-        //     throw new Error('댓글 작성자가 아닙니다.');
-        // }
 
         const deleteComment = await this.#commentRepository.deleteComment(commentId, userId);
         await this.#commentRepository.deletePinComment(commentId);
