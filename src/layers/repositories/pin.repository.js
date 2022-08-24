@@ -49,7 +49,7 @@ class PinRepository {
      * @param { string } content
      * @param { string } picKey
      * @param { string } picUrl
-     * @param { 'Small' | 'Medium' | 'Large' } picSize
+     * @param { 'small' | 'medium' | 'large' } picSize
      * @returns { Promise<{ pinId: number, title: string, content: string, picKey: string, picUrl: string, picSize: 'Small' | 'Medium' | 'Large' }> }
      */
     createPinByValues = async (title, content, picKey, picUrl, picSize) => {
@@ -61,7 +61,7 @@ class PinRepository {
             picSize
         });
 
-        /** @type { { pinId: number, title: string, content: string, picKey: string, picUrl: string, picSize: 'Small' | 'Medium' | 'Large' } } */
+        /** @type { { pinId: number, title: string, content: string, picKey: string, picUrl: string, picSize: 'small' | 'medium' | 'large' } } */
         const createdPin = createdPinResult?.dataValues;
         return createdPin;
     };

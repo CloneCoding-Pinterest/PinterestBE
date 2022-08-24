@@ -18,7 +18,7 @@ class PinService {
     /**
      * pinId, title, content, picUrl, picSize, picKey 로 이루어진 객체 에서 `picKey` 를 `제거`
      *
-     * @param { { pinId: number, title: string, content: string, picKey: string, picUrl: string, picSize: 'Small' | 'Medium' | 'Large' } } iPin
+     * @param { { pinId: number, title: string, content: string, picKey: string, picUrl: string, picSize: 'small' | 'medium' | 'large' } } iPin
      * @returns
      */
     #extractPicKeyFromPin = ({ picKey, ...others }) => {
@@ -28,9 +28,9 @@ class PinService {
     /**
      * pinId, title, content, picUrl, picSize 로 이루어진 객체와 `author` 문자열을 `결합`하여 반환합니다.
      *
-     * @param { { pinId: number, title: string, content: string, picUrl: string, picSize: 'Small' | 'Medium' | 'Large' } } iPin
+     * @param { { pinId: number, title: string, content: string, picUrl: string, picSize: 'small' | 'medium' | 'large' } } iPin
      * @param { string } author
-     * @returns { { pinId: number, title: string, content: string, picUrl: string, picSize: 'Small' | 'Medium' | 'Large', author: string } }
+     * @returns { { pinId: number, title: string, content: string, picUrl: string, picSize: 'small' | 'medium' | 'large', author: string } }
      */
     #appendAuthorIntoPin = (iPin, author) => {
         return { ...iPin, author };

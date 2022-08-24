@@ -29,7 +29,7 @@ class PinController extends BaseController {
                     userId: joi.number().required(),
                     title: joi.string().trim().required(),
                     content: joi.string().trim().required(),
-                    picSize: joi.string().valid('Small', 'Medium', 'Large').required(),
+                    picSize: joi.string().valid('small', 'medium', 'large').required(),
                     picUrl: joi.string().trim().required(),
                     picKey: joi.string().trim().required()
                 })
