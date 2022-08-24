@@ -77,54 +77,6 @@ class PinRepository {
     };
 
     /**
-     * @deprecated
-     */
-    createPin = async (userId, title, content, picKey, picUrl, picSize) => {
-        //Pin 테이블 등록
-        const pinResult = await Pin.create({
-            title,
-            content,
-            picKey,
-            picUrl,
-            picSize
-        });
-
-        //UserPin 테이블 등록
-        const userPinResult = await UserPin.create({
-            userId,
-            pinId: pinResult.dataValues.pinId
-        });
-
-        //User 테이블에서 detailId 가져오기
-        const user = await User.findOne({
-            attributes: ['detailId'],
-            where: { userId },
-            raw: true
-        });
-
-        const detailId = user.detailId;
-
-        //UserDetail 테이블에서 nickname 가져오기
-        const username = await UserDetail.findOne({
-            attributes: ['nickname'],
-            where: { detailId }
-        });
-
-        const result = {
-            pin: {
-                pinId: pinResult.dataValues.pinId,
-                author: username.dataValues.nickname,
-                title: pinResult.dataValues.title,
-                content: pinResult.dataValues.content,
-                picUrl: pinResult.dataValues.picUrl,
-                picSize: pinResult.dataValues.picSize
-            }
-        };
-
-        return result;
-    };
-
-    /**
      * UserPin에 참조된 Pin model에서 title, content, picUrl, picSize를 가져오고
      * UserPin에 참조된 User model에서 다시 참조된 UserDetail model의 nickname을 가져오기
      * @param { number } page
@@ -161,49 +113,6 @@ class PinRepository {
     };
 
     /**
-     * @deprecated
-     */
-    findPin = async (pinId) => {
-        //UserPin 테이블 조회
-        const pinResult = await UserPin.findOne({
-            where: { pinId },
-            raw: true,
-            include: [
-                {
-                    model: Pin,
-                    attributes: ['title', 'content', 'picUrl', 'picSize'],
-                    raw: true
-                },
-                {
-                    model: User,
-                    attributes: ['userId', 'detailId'],
-                    raw: true,
-                    include: [
-                        {
-                            model: UserDetail,
-                            attributes: ['detailId', ['nickname', 'author']],
-                            raw: true
-                        }
-                    ]
-                }
-            ]
-        });
-
-        const result = {
-            pin: {
-                pinId: pinResult['pinId'],
-                author: pinResult['User.UserDetail.author'],
-                title: pinResult['Pin.title'],
-                content: pinResult['Pin.content'],
-                picUrl: pinResult['Pin.picUrl'],
-                picSize: pinResult['Pin.picSize']
-            }
-        };
-
-        return result;
-    };
-
-    /**
      * true일 때 수정 성공, false일 때는 수정 사항이 없어서 수정하지 않았음.
      * null일 경우 알 수 없는 이유로 2개 이상 수정성공한 것으로 실패로 처리.
      * @param { number } pinId
@@ -221,52 +130,6 @@ class PinRepository {
     };
 
     /**
-     * @deprecated
-     */
-    updatePin = async (pinId, userId, title, content) => {
-        //Pin 테이블 수정
-        await Pin.update({ title, content }, { where: { pinId } });
-
-        //UserPin 테이블 조회
-        const pinResult = await UserPin.findOne({
-            where: { pinId },
-            raw: true,
-            include: [
-                {
-                    model: Pin,
-                    attributes: ['title', 'content', 'picUrl', 'picSize'],
-                    raw: true
-                },
-                {
-                    model: User,
-                    attributes: ['userId', 'detailId'],
-                    raw: true,
-                    include: [
-                        {
-                            model: UserDetail,
-                            attributes: ['detailId', ['nickname', 'author']],
-                            raw: true
-                        }
-                    ]
-                }
-            ]
-        });
-
-        const result = {
-            pin: {
-                pinId: pinResult['pinId'],
-                author: pinResult['User.UserDetail.author'],
-                title: pinResult['Pin.title'],
-                content: pinResult['Pin.content'],
-                picUrl: pinResult['Pin.picUrl'],
-                picSize: pinResult['Pin.picSize']
-            }
-        };
-
-        return result;
-    };
-
-    /**
      *
      * @param {number} pinId
      * @returns
@@ -278,17 +141,6 @@ class PinRepository {
 
         if (deletedPin === 1) return true;
         else return false;
-    };
-
-    /**
-     * @deprecated
-     */
-    deletePin = async (pinId, userId) => {
-        await Pin.destroy({
-            where: { pinId }
-        });
-
-        return;
     };
 }
 
