@@ -78,6 +78,16 @@ class PinController extends BaseController {
             const page = Number(req.query.page || 1); //값이 없다면 기본값 1페이지
             const count = Number(req.query.count || 18); //값이 없다면 기본값 핀 18개
 
+            await joi
+                .object({
+                    page: joi.number().required(),
+                    count: joi.number().required()
+                })
+                .validateAsync({
+                    page,
+                    count
+                });
+
             const pinList = await this.#pinService.getPinLists(page, count);
 
             return res
@@ -99,6 +109,14 @@ class PinController extends BaseController {
         const { pinId } = req.params;
 
         try {
+            await joi
+                .object({
+                    pinId: joi.number().required()
+                })
+                .validateAsync({
+                    pinId
+                });
+
             const pin = await this.#pinService.getPin(pinId);
 
             return res
@@ -152,9 +170,18 @@ class PinController extends BaseController {
     deletePin = async (req, res, next) => {
         const { pinId } = req.params;
         const userId = res.locals.userId;
-        //토큰 구현 전이라 임의 값으로 설정
 
         try {
+            await joi
+                .object({
+                    pinId: joi.number().required(),
+                    userId: joi.number().required()
+                })
+                .validateAsync({
+                    pinId,
+                    userId
+                });
+
             await this.#pinService.deletePin(pinId, userId);
 
             return res
