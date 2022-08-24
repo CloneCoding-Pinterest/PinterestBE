@@ -1,6 +1,26 @@
 const { User, UserDetail, Pin, UserPin } = require('../../sequelize/models');
 
 class PinRepository {
+    isExistsUserPinByUserIdAndPinId = async (userId, pinId) => {
+        const userPin = await UserPin.findOne({
+            where: { userId, pinId },
+            raw: true
+        });
+
+        if (userPin === null) return false;
+        else return true;
+    };
+
+    findPicUrlByPinId = async (pinId) => {
+        const findedPin = await Pin.findOne({
+            where: { pinId },
+            raw: true,
+            attributes: ['picUrl']
+        });
+
+        return findedPin.picUrl;
+    };
+
     /**
      * @param { string } title
      * @param { string } content
@@ -155,7 +175,26 @@ class PinRepository {
         return result;
     };
 
-    //핀 수정
+    /**
+     * true일 때 수정 성공, false일 때는 수정 사항이 없어서 수정하지 않았음.
+     * null일 경우 알 수 없는 이유로 2개 이상 수정성공한 것으로 실패로 처리.
+     * @param { number } pinId
+     * @param { number } userId
+     * @param { string } title
+     * @param { string } content
+     * @returns
+     */
+    updatePinByValues = async (pinId, userId, title, content) => {
+        const updatedPin = await Pin.update({ title, content }, { where: { pinId } });
+
+        if (updatedPin[0] > 1) return null;
+        else if (updatedPin[0] === 1) return true;
+        else return false;
+    };
+
+    /**
+     * @deprecated
+     */
     updatePin = async (pinId, userId, title, content) => {
         //Pin 테이블 수정
         await Pin.update({ title, content }, { where: { pinId } });

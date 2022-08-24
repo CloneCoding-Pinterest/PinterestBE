@@ -118,14 +118,27 @@ class PinController extends BaseController {
         const { pinId } = req.params;
         const userId = res.locals.userId;
         const { title, content } = req.body;
-        //토큰 구현 전이라 임의 값으로 설정
 
         try {
-            const pin = await this.#pinService.updatePin(pinId, userId, title, content);
+            await joi
+                .object({
+                    userId: joi.number().required(),
+                    pinId: joi.number().required(),
+                    title: joi.string().trim().required(),
+                    content: joi.string().trim().required()
+                })
+                .validateAsync({
+                    userId,
+                    pinId,
+                    title,
+                    content
+                });
+
+            const pin = await this.#pinService.updatePinByValues(pinId, userId, title, content);
 
             return res
                 .status(200)
-                .json(this.#formProvider.getSuccessFormDto('Pin 수정에 성공했습니다.', pin));
+                .json(this.#formProvider.getSuccessFormDto('Pin 수정에 성공했습니다.', { pin }));
         } catch (err) {
             const exception = this.exceptionHandler(err);
             return res
