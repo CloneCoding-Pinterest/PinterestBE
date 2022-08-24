@@ -22,6 +22,14 @@ class CommentController extends BaseController {
         try {
             const commentList = await this.#commentService.getComment(pinId);
 
+            await joi
+                .object({
+                    pinId: joi.number().required()
+                })
+                .validateAsync({
+                    pinId
+                });
+
             return res.status(200).json(
                 this.#formProvider.getSuccessFormDto('댓글 조회에 성공했습니다.', {
                     commentList
