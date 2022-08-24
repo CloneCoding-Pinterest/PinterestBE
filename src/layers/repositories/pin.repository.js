@@ -99,39 +99,40 @@ class PinRepository {
         return result;
     };
 
-    //핀 전체 조회
+    /**
+     * UserPin에 참조된 Pin model에서 title, content, picUrl, picSize를 가져오고
+     * UserPin에 참조된 User model에서 다시 참조된 UserDetail model의 nickname을 가져오기
+     * @param { number } page
+     * @param { number } count
+     * @returns
+     */
     findAllPins = async (page, count) => {
-        const pinsResult = await UserPin.findAll({
+        const pins = await UserPin.findAll({
             offset: count * (page - 1),
             limit: count,
+            raw: true,
             include: [
                 {
                     model: Pin,
+                    raw: true,
                     attributes: ['title', 'content', 'picUrl', 'picSize']
                 },
                 {
                     model: User,
-                    attributes: ['userId', 'detailId'],
+                    raw: true,
+                    attributes: ['detailId'],
                     include: [
                         {
                             model: UserDetail,
-                            attributes: ['detailId', 'nickname']
+                            raw: true,
+                            attributes: ['nickname']
                         }
                     ]
                 }
             ]
         });
 
-        return pinsResult.map((pin) => {
-            return {
-                pinId: pin.dataValues.pinId,
-                author: pin.dataValues.User.dataValues.UserDetail.dataValues.nickname,
-                title: pin.dataValues.Pin.dataValues.title,
-                content: pin.dataValues.Pin.dataValues.content,
-                picUrl: pin.dataValues.Pin.dataValues.picUrl,
-                picSize: pin.dataValues.Pin.dataValues.picSize
-            };
-        });
+        return pins;
     };
 
     //핀 상세 조회

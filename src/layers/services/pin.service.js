@@ -82,9 +82,19 @@ class PinService {
 
     //핀 전체 조회
     getPinLists = async (page, count) => {
-        const result = await this.#pinRepository.findAllPins(page, count);
+        const pins = await this.#pinRepository.findAllPins(page, count);
+        if (pins === null) throw new Error('알 수 없는 이유로 Pin 조회에 실패했습니다.');
 
-        return result;
+        return pins.map((pin) => {
+            return {
+                pinId: pin['pinId'],
+                author: pin['User.UserDetail.nickname'],
+                title: pin['Pin.title'],
+                content: pin['Pin.content'],
+                picUrl: pin['Pin.picUrl'],
+                picSize: pin['Pin.picSize']
+            };
+        });
     };
 
     //핀 상세 조회
