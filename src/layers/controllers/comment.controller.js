@@ -84,6 +84,18 @@ class CommentController extends BaseController {
         const userId = res.locals.userId;
 
         try {
+            await joi
+                .object({
+                    commentId: joi.number().required(),
+                    content: joi.string().required(),
+                    userId: joi.number().required()
+                })
+                .validateAsync({
+                    commentId,
+                    content,
+                    userId
+                });
+
             const comment = await this.#commentService.updateComment(commentId, content, userId);
 
             return res
@@ -104,6 +116,15 @@ class CommentController extends BaseController {
         const userId = res.locals.userId;
 
         try {
+            await joi
+                .object({
+                    commentId: joi.number().required(),
+                    userId: joi.number().required()
+                })
+                .validateAsync({
+                    commentId,
+                    userId
+                });
             await this.#commentService.deleteComment(commentId, userId);
             return res
                 .status(200)
