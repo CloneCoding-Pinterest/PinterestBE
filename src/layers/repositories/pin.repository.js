@@ -50,7 +50,7 @@ class PinRepository {
     createUserPinByPinIdAndUserId = async (userId, pinId) => {
         const createdUserPinResult = await UserPin.create({ userId, pinId });
 
-        console.log(createdUserPinResult);
+        return createdUserPinResult;
     };
 
     //핀 등록
