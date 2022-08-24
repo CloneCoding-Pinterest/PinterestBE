@@ -1,4 +1,4 @@
-const { User, UserDetail, Comment, PinComment, UserPin } = require('../../sequelize/models');
+const { User, UserDetail, Comment, PinComment } = require('../../sequelize/models');
 
 class CommentRepository {
     getComment = async (pinId) => {
@@ -94,8 +94,8 @@ class CommentRepository {
     };
     // 댓글 작성자 찾기
     findByUserId = async (userId) => {
-        const findByUserId = await UserPin.findOne({ where: { userId } });
-        return findByUserId.dataValues;
+        const findByUserId = await PinComment.findOne({ where: { userId } });
+        return findByUserId;
     };
 }
 

@@ -14,7 +14,7 @@ class CommentController extends BaseController {
         this.#commentService = new CommentService();
         this.#formProvider = new FormProvider();
     }
-
+    // 댓글 조회
     /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
     getComment = async (req, res, next) => {
         const { pinId } = req.query;
@@ -78,6 +78,7 @@ class CommentController extends BaseController {
     };
 
     // 댓글 수정
+    /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
     updateComment = async (req, res, next) => {
         const { commentId } = req.params;
         const { content } = req.body;
@@ -111,6 +112,7 @@ class CommentController extends BaseController {
         }
     };
     // 댓글 삭제
+    /** @param { e.Request } req @param { e.Response } res @param { e.NextFunction } next */
     deleteComment = async (req, res, next) => {
         const { commentId } = req.params;
         const userId = res.locals.userId;
