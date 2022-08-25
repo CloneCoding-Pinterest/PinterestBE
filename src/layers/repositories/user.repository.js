@@ -56,7 +56,7 @@ class UserRepository {
             ]
         });
 
-        if (user === null) return null;
+        if (user === null) return ㄹ미;
         else {
             return {
                 userId: user['userId'],

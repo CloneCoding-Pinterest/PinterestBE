@@ -73,7 +73,7 @@ class PinService {
         });
     };
 
-    //핀 상세 조회
+    // 핀 상세 조회
     getPin = async (pinId) => {
         const pin = await this.#pinRepository.findPinByPinId(pinId);
         if (!pin) throw new NotFoundException('존재 하지 않는 pin입니다.');
